@@ -1,0 +1,244 @@
+:root {
+    --main-color: #0063d1;
+}
+
+body {
+    font-family: "Kanit", sans-serif !important;
+    background-color: #ffffff;
+    margin: 0;
+}
+
+.main-font {
+    font-family: "Kanit", sans-serif !important;
+}
+
+a {
+    text-decoration: none;
+    color: #000000;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.header-lg {
+    position: fixed;
+    width: 100%;
+    z-index: 999;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 30px;
+    height: 80px;
+    box-shadow: 0 3px 3px rgb(0 0 0 / 15%);
+    background-color: var(--main-color);
+}
+
+.header-lg .logo img {
+    height: 50px;
+}
+
+.header-lg .menu-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.header-lg .menu-container .menu-item a {
+    cursor: pointer;
+    margin: 0 10px;
+    padding: 10px 15px;
+    font-size: 18px;
+    border-radius: 100px;
+}
+
+.header-lg .menu-container .menu-item:last-child {
+    /* padding-right: 0px; */
+    margin-right: 0;
+}
+
+.header-lg .menu-container .menu-item a {
+    color: #ffffff;
+}
+
+.header-lg .menu-container .menu-item a:hover,
+.header-lg .menu-container .menu-item.selected a {
+    text-decoration: none;
+    background-color: #ffffff;
+    color: var(--main-color);
+}
+
+.header-lg .menu-container .ant-menu-item::after {
+    border-bottom: none;
+}
+
+.header-xs {
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 60px;
+    background-color: #ffffff;
+    padding: 10px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 999;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.header-xs-hidden {
+    content: "";
+    width: 100%;
+    height: 50px;
+}
+
+.header-xs .logo,
+.header-xs .more-menu {
+    height: 100%;
+}
+
+.header-xs .logo img {
+    height: 100%;
+}
+
+.header-xs .more-menu img {
+    height: 90%;
+}
+
+.more-menus-drawer .list-group-item.selected {
+    color: var(--main-color);
+}
+
+.footer {
+    background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 1));
+    padding: 30px;
+    color: #ffffff;
+    text-align: center;
+}
+
+.content {
+    min-height: calc(100vh - 300px);
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+.menu-box {
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    transition: all 0.4s;
+}
+
+.menu-box:hover {
+    transform: scale(1.05);
+    background-color: var(--main-color);
+    color: #ffffff;
+}
+
+.menu-box > .image img {
+    width: 80px;
+}
+
+.menu-box > .text {
+    flex: 1;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.page-title {
+}
+
+.job-item {
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    height: 100%;
+    overflow: hidden;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+    transition: all 0.4s;
+}
+
+.job-item:hover {
+    transform: translateY(-8px);
+    border: 1px solid var(--main-color);
+}
+
+.job-item .badge-promotion {
+    position: absolute;
+    z-index: 9;
+    bottom: 10px;
+    right: 10px;
+}
+
+.job-item-cover,
+.image-wrapper {
+    padding-bottom: 75%;
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background: #bdc3c7;
+}
+
+.job-item-cover img,
+.image-wrapper img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background-color: #999999;
+    transition: all 0.4s;
+}
+
+.job-wrapper.rounded {
+    border-radius: 10px;
+}
+
+.job-item:hover .shop-item-cover img,
+.image-wrapper.hover-zoom:hover img {
+    transform: scale(1.2) rotate(10deg);
+}
+
+.loading-modal .ant-modal-content {
+    background-color: transparent !important;
+    box-shadow: none;
+    display: flex;
+    justify-content: center;
+}
+
+.lds-hourglass {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+.lds-hourglass:after {
+    content: " ";
+    display: block;
+    border-radius: 50%;
+    width: 0;
+    height: 0;
+    margin: 8px;
+    box-sizing: border-box;
+    border: 32px solid #fff;
+    border-color: #fff transparent #fff transparent;
+    animation: lds-hourglass 1.2s infinite;
+}
+@keyframes lds-hourglass {
+    0% {
+        transform: rotate(0);
+        animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+    }
+    50% {
+        transform: rotate(900deg);
+        animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+    100% {
+        transform: rotate(1800deg);
+    }
+}

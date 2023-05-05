@@ -1,6 +1,16 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  reactStrictMode: true,
-}
 
-module.exports = nextConfig
+const basePath = '/arms';
+
+const nextConfig = {
+    assetPrefix: basePath,
+    basePath,
+    trailingSlash: true,
+    reactStrictMode: false,
+    swcMinify: true,
+    images: {
+        unoptimized: true,
+    },
+};
+
+module.exports = nextConfig;
