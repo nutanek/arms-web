@@ -206,7 +206,7 @@ class DashboardMemberList extends Component {
                                             render: (value) => (
                                                 <span>
                                                     {moment(value).format(
-                                                        "DD/MM/YYYY HH:mm:ss"
+                                                        "DD/MM/YYYY HH:mm"
                                                     )}
                                                 </span>
                                             ),

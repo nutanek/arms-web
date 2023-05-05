@@ -5,6 +5,7 @@ import { API_PATH } from "./../constants/config";
 const API_URL_V1 = `${API_PATH}/v1`;
 
 // Api Constants
+const UPLOAD_IMAGE = `${API_URL_V1}/upload`;
 const MEMBER_LIST = `${API_URL_V1}/member-list?page=:page&size=:size&keyword=:keyword`;
 const MEMBER_DETAIL = `${API_URL_V1}/member-detail?id=:id`;
 const MEMBER_DETAIL_ADD = `${API_URL_V1}/member-detail-add`;
@@ -12,6 +13,14 @@ const MEMBER_DETAIL_UPDATE = `${API_URL_V1}/member-detail-update?id=:id`;
 const MEMBER_DETAIL_REMOVE = `${API_URL_V1}/member-detail-remove?id=:id`;
 const SKILL_LIST = `${API_URL_V1}/skill-list`;
 const JOB_DETAIL_ADD = `${API_URL_V1}/job-detail-add`;
+
+export const uploadImageApi = async (props) =>
+    callApi({
+        ...props,
+        url: UPLOAD_IMAGE,
+        method: "POST",
+        dataType: "MULTIPART",
+    });
 
 export const getMemberListApi = async (props) =>
     callApi({
@@ -80,25 +89,31 @@ const generateApiUrl = (url, params) => {
     return apiUrl;
 };
 
-const generateHeader = (req) => {
+const generateHeader = (req, dataType) => {
     let header = {
         Accept: "application/json, text/plain, */*",
         "Accept-Language": "en-US,en;q=0.9",
         // Authorization: accessToken
         //     ? `Bearer ${accessToken}`
         //     : `Basic ${APP_API_KEY}`,
-        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+        "Content-Type":
+            dataType == "MULTIPART"
+                ? "multipart/form-data; charset=UTF-8"
+                : "application/x-www-form-urlencoded; charset=UTF-8",
     };
     return header;
 };
 
 const callApi = async ({ req, res, url, params, method, body, dataType }) => {
     let apiUrl = generateApiUrl(url, params);
-    let apiHeaders = generateHeader(req);
+    let apiHeaders = generateHeader(req, dataType);
     console.log("api url:", apiUrl);
     console.log("api headers:", apiHeaders);
     let bodyData;
-    if (dataType === "JSON") {
+    if (dataType == "MULTIPART") {
+        bodyData = new FormData();
+        Object.keys(body).forEach((key) => bodyData.append(key, body[key]));
+    } else if (dataType === "JSON") {
         bodyData = body;
     } else {
         bodyData = qs.stringify(body);

@@ -11,14 +11,20 @@ import {
     Button,
     Modal,
     Divider,
+    Upload,
+    message,
 } from "antd";
 import dayjs from "dayjs";
+import cloneDeep from "lodash/cloneDeep";
+import { assetPrefix } from "./../../../next.config";
 import { GENDERS } from "./../../../constants/appConstants";
+import { IMAGE_PATH } from "./../../../constants/config";
 import {
     getSkillListApi,
     getMemberDetailApi,
     addMemberDetailApi,
     updateMemberDetailApi,
+    uploadImageApi,
 } from "./../../../services/apiServices";
 import MainLayout from "./../../../components/Layout/MainLayout";
 import Loading from "./../../../components/Utility/Modal/Loading";
@@ -111,6 +117,7 @@ class DashboardMemberDetail extends Component {
                 okText: "ตกลง",
                 afterClose: () => {
                     this.formRef.current.resetFields();
+                    this.setState({ member: {} });
                 },
             });
         } catch (error) {
@@ -162,7 +169,7 @@ class DashboardMemberDetail extends Component {
     }
 
     onSubmit(values = {}) {
-        let { action } = this.state;
+        let { action, member } = this.state;
         let data = {
             id_skills: values.skills.join(","),
             email: values.member_email,
@@ -172,6 +179,7 @@ class DashboardMemberDetail extends Component {
             phone_number: values.phone_number,
             firstname: values.firstname,
             lastname: values.lastname,
+            image: member.image,
         };
 
         if (action === "add") {
@@ -183,6 +191,42 @@ class DashboardMemberDetail extends Component {
 
     async onBack() {
         await Router.back();
+    }
+
+    async uploadImage(file, onSuccess) {
+        try {
+            this.setState({ isLoading: true });
+            let { image } = await uploadImageApi({
+                body: {
+                    file,
+                    width: 450,
+                    height: 450,
+                },
+            });
+            this.setState({
+                isLoading: false,
+            });
+            onSuccess && onSuccess(image);
+        } catch (error) {
+            message.error(error?.message);
+            this.setState({ isLoading: false });
+        }
+    }
+
+    onChangeImage(info) {
+        if (info.file.status !== "uploading") {
+            console.log(info.fileList[0]);
+            this.uploadImage(info.fileList[0].originFileObj, (image) => {
+                let member = cloneDeep(this.state.member);
+                member.image = image;
+                this.setState({ member });
+            });
+        }
+        if (info.file.status === "done") {
+            message.success(`${info.file.name} file uploaded successfully`);
+        } else if (info.file.status === "error") {
+            message.error(`${info.file.name} file upload failed.`);
+        }
     }
 
     render() {
@@ -211,6 +255,38 @@ class DashboardMemberDetail extends Component {
                                 }
                                 autoComplete="off"
                             >
+                                <Row gutter={15} className="mb-3">
+                                    <Col className="member-profile" span={24}>
+                                        <div className="avatar-wrapper">
+                                            <div className="avatar">
+                                                <img
+                                                    src={
+                                                        member.image
+                                                            ? `${IMAGE_PATH}/${member.image}`
+                                                            : `${assetPrefix}/images/no-avatar.png`
+                                                    }
+                                                    alt="user"
+                                                />
+                                            </div>
+                                        </div>
+                                        <Upload
+                                            beforeUpload={() => false}
+                                            accept="image/png, image/gif, image/jpeg, image/jpg"
+                                            fileList={[]}
+                                            onChange={this.onChangeImage.bind(
+                                                this
+                                            )}
+                                        >
+                                            <Button
+                                                className="mt-3"
+                                                style={{ borderRadius: 8 }}
+                                            >
+                                                อัปโหลดรูปภาพ
+                                            </Button>
+                                        </Upload>
+                                    </Col>
+                                </Row>
+
                                 <Divider orientation="left" className="fw-bold">
                                     ข้อมูลเข้าสู่ระบบ
                                 </Divider>
