@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import Head from "next/head";
-import Link from "next/link";
 import {
     Row,
     Col,
@@ -10,11 +9,13 @@ import {
     DatePicker,
     Select,
     Button,
+    Modal,
 } from "antd";
-import { assetPrefix } from "./../next.config";
 import { provinces } from "./../constants/provinces";
+import { JOB_TYPES } from "./../constants/appConstants";
+import { getSkillListApi, addJobDetailApi } from "./../services/apiServices";
 import MainLayout from "./../components/Layout/MainLayout";
-import JobCard from "./../components/Job/JobCard";
+import Loading from "./../components/Utility/Modal/Loading";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -23,35 +24,75 @@ const title = "ประกาศจ้างงาน";
 
 class HiringPage extends Component {
     state = {
+        isLoadng: false,
         isSubmitted: false,
+        skills: [],
     };
 
     formRef = React.createRef();
 
-    componentDidMount() {}
+    componentDidMount() {
+        this.getSkills();
+    }
 
-    onSubmit(values) {
-        let data = {};
+    async getSkills() {
+        this.setState({ isLoading: true });
+        try {
+            let skills = await getSkillListApi();
+            this.setState({ skills });
+        } catch (error) {
+        } finally {
+            this.setState({ isLoading: false });
+        }
+    }
 
-        console.log(values)
+    async addJobDetail(data) {
+        this.setState({ isLoading: true });
+        try {
+            let res = await addJobDetailApi({ body: data });
+            Modal.success({
+                title: "สำเร็จ",
+                content: res.message,
+                centered: true,
+                maskClosable: true,
+                okText: "ตกลง",
+                afterClose: () => {
+                    this.formRef.current.resetFields();
+                },
+            });
+        } catch (error) {
+            Modal.error({
+                title: "ไม่สำเร็จ",
+                content: error?.message,
+                centered: true,
+                maskClosable: true,
+                okText: "ตกลง",
+            });
+        } finally {
+            this.setState({ isLoading: false });
+        }
+    }
 
-        let dataStr = JSON.stringify(data);
-
-        // if (this.props.type === "ADD") {
-        //     this.addGame(dataStr, () => {
-        //         this.props.navigate &&
-        //             this.props.navigate(`${ROOT_PATH}/account/admin/games`);
-        //     });
-        // } else if (this.props.type === "EDIT") {
-        //     this.updateGame(dataStr, () => {
-        //         this.props.navigate &&
-        //             this.props.navigate(`${ROOT_PATH}/account/admin/games`);
-        //     });
-        // }
+    onSubmit(values = {}) {
+        let data = {
+            id_skills: values.skills.join(","),
+            location_name: values.location_name,
+            location_address: values.location_address,
+            location_province: values.location_province,
+            title: values.title,
+            job_type: values.job_type,
+            detail: values.detail,
+            price: values.price,
+            start_date: values.work_date[0].format("YYYY-MM-DD"),
+            start_time: values.work_date[0].format("HH:mm:ss"),
+            end_date: values.work_date[1].format("YYYY-MM-DD"),
+            end_time: values.work_date[1].format("HH:mm:ss"),
+        };
+        this.addJobDetail(data);
     }
 
     render() {
-        let { jobs, page, totalPage } = this.state;
+        let { isLoading, skills } = this.state;
         return (
             <>
                 <Head>
@@ -109,7 +150,19 @@ class HiringPage extends Component {
                                                 },
                                             ]}
                                         >
-                                            <Input size="large" />
+                                            <Select
+                                                placeholder="โปรดเลือกประเภทงาน"
+                                                size="large"
+                                            >
+                                                {JOB_TYPES.map((type) => (
+                                                    <Option
+                                                        key={type.id}
+                                                        value={type.name}
+                                                    >
+                                                        {type.name}
+                                                    </Option>
+                                                ))}
+                                            </Select>
                                         </Form.Item>
                                     </Col>
                                     <Col span={12}>
@@ -127,7 +180,21 @@ class HiringPage extends Component {
                                                 },
                                             ]}
                                         >
-                                            <Input size="large" />
+                                            <Select
+                                                placeholder="โปรดเลือกทักษะ (ได้มากกว่า 1 ตัวเลือก)"
+                                                size="large"
+                                                mode="tags"
+                                                tokenSeparators={[", ", ","]}
+                                            >
+                                                {skills.map((skill) => (
+                                                    <Option
+                                                        key={skill.id}
+                                                        value={skill.id}
+                                                    >
+                                                        {skill.name}
+                                                    </Option>
+                                                ))}
+                                            </Select>
                                         </Form.Item>
                                     </Col>
                                     <Col span={24}>
@@ -176,14 +243,15 @@ class HiringPage extends Component {
                                     <Col span={12}>
                                         <Form.Item
                                             label={
-                                                <div className="fs-6">ค่าจ้าง</div>
+                                                <div className="fs-6">
+                                                    ค่าจ้าง
+                                                </div>
                                             }
                                             name="price"
                                             rules={[
                                                 {
                                                     required: true,
-                                                    message:
-                                                        "โปรดระบุ ค่าจ้าง",
+                                                    message: "โปรดระบุ ค่าจ้าง",
                                                 },
                                             ]}
                                         >
@@ -277,6 +345,7 @@ class HiringPage extends Component {
                         </Col>
                     </Row>
                 </MainLayout>
+                <Loading isOpen={isLoading} />
             </>
         );
     }
