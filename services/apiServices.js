@@ -5,7 +5,10 @@ import { API_PATH } from "./../constants/config";
 const API_URL_V1 = `${API_PATH}/v1`;
 
 // Api Constants
-const MEMBER_LIST = `${API_URL_V1}/member-list?page=:page&size=:size`;
+const MEMBER_LIST = `${API_URL_V1}/member-list?page=:page&size=:size&keyword=:keyword`;
+const MEMBER_DETAIL = `${API_URL_V1}/member-detail?id=:id`;
+const MEMBER_DETAIL_ADD = `${API_URL_V1}/member-detail-add`;
+const MEMBER_DETAIL_UPDATE = `${API_URL_V1}/member-detail-update?id=:id`;
 const MEMBER_DETAIL_REMOVE = `${API_URL_V1}/member-detail-remove?id=:id`;
 const SKILL_LIST = `${API_URL_V1}/skill-list`;
 const JOB_DETAIL_ADD = `${API_URL_V1}/job-detail-add`;
@@ -17,6 +20,26 @@ export const getMemberListApi = async (props) =>
         method: "GET",
     });
 
+export const getMemberDetailApi = async (props) =>
+    callApi({
+        ...props,
+        url: MEMBER_DETAIL,
+        method: "GET",
+    });
+
+export const addMemberDetailApi = async (props) =>
+    callApi({
+        ...props,
+        url: MEMBER_DETAIL_ADD,
+        method: "POST",
+    });
+
+export const updateMemberDetailApi = async (props) =>
+    callApi({
+        ...props,
+        url: MEMBER_DETAIL_UPDATE,
+        method: "POST",
+    });
 export const removeMemberDetailApi = async (props) =>
     callApi({
         ...props,

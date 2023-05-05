@@ -5,11 +5,12 @@ import Router from "next/router";
 import {
     Row,
     Col,
-    Alert,
+    Input,
     Table,
     Button,
     Popconfirm,
     Modal,
+    Card,
     message,
 } from "antd";
 import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
@@ -31,13 +32,18 @@ class DashboardMemberList extends Component {
         members: [],
         page: 1,
         totalPage: 5,
+        keyword: "",
     };
 
     componentDidMount() {
         setTimeout(() => {
-            let query = Router.query;
-            this.setState({ page: query.page || 1 }, () =>
-                this.getMemberList()
+            let { page, keyword } = Router.query;
+            this.setState(
+                {
+                    page: page || 1,
+                    keyword,
+                },
+                () => this.getMemberList()
             );
         }, 100);
     }
@@ -49,6 +55,7 @@ class DashboardMemberList extends Component {
                 params: {
                     page: this.state.page,
                     size: pageSize,
+                    keyword: this.state.keyword,
                 },
             });
             this.setState({
@@ -87,15 +94,28 @@ class DashboardMemberList extends Component {
         }
     }
 
-    onChangePage(page) {
-        Router.push(`/dashboard/member/list?page=${page}`);
+    async onChangePage(page) {
+        await Router.push(
+            `/dashboard/member/list?page=${page}&keyword=${this.state.keyword}`
+        );
         this.setState({ page }, () => {
             this.getMemberList();
         });
     }
 
+    async onSearch(keyword) {
+        await Router.push(`/dashboard/member/list?page=1&keyword=${keyword}`);
+        this.setState({ keyword, page: 1 }, () => {
+            this.getMemberList();
+        });
+    }
+
+    onChangeKeyword(keyword) {
+        this.setState({ keyword });
+    }
+
     render() {
-        let { isLoading, members, page, totalPage } = this.state;
+        let { isLoading, members, page, totalPage, keyword } = this.state;
         return (
             <>
                 <Head>
@@ -106,119 +126,156 @@ class DashboardMemberList extends Component {
                     <h1 className="page-title fs-2 text-center fw-bold mt-0 mb-4">
                         {title}
                     </h1>
+
                     <Row justify="center">
                         <Col lg={{ span: 20 }}>
-                            <Row justify="end">
-                                <Col className="pb-3">
-                                    <Link
-                                        href={`/dashboard/member/detail?action=add`}
+                            <Card
+                                type="inner"
+                                title={
+                                    <Row
+                                        justify="space-between"
+                                        className="pt-3"
                                     >
-                                        <Button
-                                            type="primary"
-                                            size="large"
-                                            icon={<PlusOutlined />}
-                                            style={{ borderRadius: 8 }}
-                                        >
-                                            เพิ่มสมาชิกใหม่
-                                        </Button>
-                                    </Link>
-                                </Col>
-                            </Row>
-                            <Table
-                                dataSource={members}
-                                pagination={{
-                                    current: page,
-                                    pageSize: pageSize,
-                                    total: totalPage * pageSize,
-                                    onChange: this.onChangePage.bind(this),
-                                }}
-                                rowKey="id"
-                                columns={[
-                                    {
-                                        title: "ชื่อ-นามสกุล",
-                                        dataIndex: "name",
-                                        key: "name",
-                                        className: "fs-6",
-                                        render: (value, record) =>
-                                            `${record.firstname} ${record.lastname}`,
-                                    },
-                                    {
-                                        title: "อีเมล",
-                                        dataIndex: "email",
-                                        key: "email",
-
-                                        className: " fs-6",
-                                    },
-                                    {
-                                        title: "วันที่ลงทะเบียน",
-                                        dataIndex: "create_date",
-                                        key: "create_date",
-                                        align: "center",
-                                        className: "fs-6",
-                                        render: (value) => (
-                                            <span>
-                                                {moment(value).format(
-                                                    "DD/MM/YYYY HH:mm:ss"
+                                        <Col xs={12} lg={8}>
+                                            <Input.Search
+                                                placeholder="ค้นหาสมาชิกด้วย ชื่อ และอีเมล"
+                                                allowClear
+                                                size="large"
+                                                value={keyword}
+                                                onChange={(e) =>
+                                                    this.onChangeKeyword(
+                                                        e.target.value
+                                                    )
+                                                }
+                                                onSearch={this.onSearch.bind(
+                                                    this
                                                 )}
-                                            </span>
-                                        ),
-                                    },
-                                    {
-                                        title: "สถานะ",
-                                        dataIndex: "approved_status",
-                                        key: "approved_status",
-                                        align: "center",
-                                        className: "fs-6",
-                                        render: (value) => <span>{value}</span>,
-                                    },
-                                    {
-                                        title: "",
-                                        dataIndex: "action",
-                                        key: "action",
-                                        align: "right",
-                                        render: (value, record, index) => (
-                                            <div
-                                                style={{ whiteSpace: "nowrap" }}
+                                            />
+                                        </Col>
+                                        <Col
+                                            span={12}
+                                            className="pb-3 text-end"
+                                        >
+                                            <Link
+                                                href={`/dashboard/member/detail?action=add`}
                                             >
-                                                <Link href="/howto">
-                                                    <Button
-                                                        type="primary"
-                                                        style={{
-                                                            borderRadius: 8,
-                                                        }}
-                                                        icon={<EditOutlined />}
-                                                    ></Button>
-                                                </Link>
-
-                                                <Popconfirm
-                                                    title={
-                                                        "คุณต้องการลบสมาชิกรายนี้ใช่ไหม?"
-                                                    }
-                                                    onConfirm={() =>
-                                                        this.removeMemberList(
-                                                            record.id
-                                                        )
-                                                    }
-                                                    okText={"ยืนยัน"}
-                                                    cancelText={"ยกเลิก"}
+                                                <Button
+                                                    type="primary"
+                                                    size="large"
+                                                    icon={<PlusOutlined />}
+                                                    style={{ borderRadius: 8 }}
                                                 >
-                                                    <Button
-                                                        style={{
-                                                            marginLeft: 10,
-                                                            borderRadius: 8,
-                                                        }}
-                                                        danger
-                                                        type="primary"
-                                                        icon={
-                                                            <DeleteOutlined />
+                                                    เพิ่มสมาชิกใหม่
+                                                </Button>
+                                            </Link>
+                                        </Col>
+                                    </Row>
+                                }
+                            >
+                                <Table
+                                    dataSource={members}
+                                    pagination={{
+                                        current: page,
+                                        pageSize: pageSize,
+                                        total: totalPage * pageSize,
+                                        onChange: this.onChangePage.bind(this),
+                                    }}
+                                    rowKey="id"
+                                    columns={[
+                                        {
+                                            title: "ชื่อ-นามสกุล",
+                                            dataIndex: "name",
+                                            key: "name",
+                                            className: "fs-6",
+                                            render: (value, record) =>
+                                                `${record.firstname} ${record.lastname}`,
+                                        },
+                                        {
+                                            title: "อีเมล",
+                                            dataIndex: "email",
+                                            key: "email",
+
+                                            className: " fs-6",
+                                        },
+                                        {
+                                            title: "วันที่ลงทะเบียน",
+                                            dataIndex: "create_date",
+                                            key: "create_date",
+                                            align: "center",
+                                            className: "fs-6",
+                                            render: (value) => (
+                                                <span>
+                                                    {moment(value).format(
+                                                        "DD/MM/YYYY HH:mm:ss"
+                                                    )}
+                                                </span>
+                                            ),
+                                        },
+                                        {
+                                            title: "สถานะ",
+                                            dataIndex: "approved_status",
+                                            key: "approved_status",
+                                            align: "center",
+                                            className: "fs-6",
+                                            render: (value) => (
+                                                <span>{value}</span>
+                                            ),
+                                        },
+                                        {
+                                            title: "",
+                                            dataIndex: "action",
+                                            key: "action",
+                                            align: "right",
+                                            render: (value, record, index) => (
+                                                <div
+                                                    style={{
+                                                        whiteSpace: "nowrap",
+                                                    }}
+                                                >
+                                                    <Link
+                                                        href={`/dashboard/member/detail?id=${record.id}`}
+                                                    >
+                                                        <Button
+                                                            type="primary"
+                                                            style={{
+                                                                borderRadius: 8,
+                                                            }}
+                                                            icon={
+                                                                <EditOutlined />
+                                                            }
+                                                        ></Button>
+                                                    </Link>
+
+                                                    <Popconfirm
+                                                        title={
+                                                            "คุณต้องการลบสมาชิกรายนี้ใช่ไหม?"
                                                         }
-                                                    ></Button>
-                                                </Popconfirm>
-                                            </div>
-                                        ),
-                                    },
-                                ]}
-                            />
+                                                        onConfirm={() =>
+                                                            this.removeMemberList(
+                                                                record.id
+                                                            )
+                                                        }
+                                                        okText={"ยืนยัน"}
+                                                        cancelText={"ยกเลิก"}
+                                                    >
+                                                        <Button
+                                                            style={{
+                                                                marginLeft: 10,
+                                                                borderRadius: 8,
+                                                            }}
+                                                            danger
+                                                            type="primary"
+                                                            icon={
+                                                                <DeleteOutlined />
+                                                            }
+                                                        ></Button>
+                                                    </Popconfirm>
+                                                </div>
+                                            ),
+                                        },
+                                    ]}
+                                />
+                            </Card>
                         </Col>
                     </Row>
                 </MainLayout>

@@ -104,7 +104,7 @@ class HiringPage extends Component {
                         {title}
                     </h1>
                     <Row justify="center">
-                        <Col md={{ span: 15 }}>
+                        <Col md={{ span: 14 }}>
                             <Form
                                 ref={this.formRef}
                                 layout="vertical"
@@ -329,7 +329,7 @@ class HiringPage extends Component {
                                     </Col>
                                 </Row>
 
-                                <div className="text-center">
+                                <div className="text-center pt-3">
                                     <Button
                                         htmlType="submit"
                                         type="primary"

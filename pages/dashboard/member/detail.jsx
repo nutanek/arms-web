@@ -1,0 +1,487 @@
+import React, { Component } from "react";
+import Head from "next/head";
+import Router from "next/router";
+import {
+    Row,
+    Col,
+    Form,
+    Input,
+    DatePicker,
+    Select,
+    Button,
+    Modal,
+    Divider,
+} from "antd";
+import dayjs from "dayjs";
+import { GENDERS } from "./../../../constants/appConstants";
+import {
+    getSkillListApi,
+    getMemberDetailApi,
+    addMemberDetailApi,
+    updateMemberDetailApi,
+} from "./../../../services/apiServices";
+import MainLayout from "./../../../components/Layout/MainLayout";
+import Loading from "./../../../components/Utility/Modal/Loading";
+
+const { Option } = Select;
+
+let title = "ข้อมูลสมาชิก";
+
+class DashboardMemberDetail extends Component {
+    state = {
+        isLoadng: false,
+        isSubmitted: false,
+        skills: [],
+        action: "",
+        member: {},
+        title,
+    };
+
+    formRef = React.createRef();
+
+    componentDidMount() {
+        this.getSkills();
+        setTimeout(() => {
+            let query = Router.query;
+            this.setState(
+                {
+                    action: query.action === "add" ? "add" : "edit",
+                    title:
+                        query.action == "add"
+                            ? "เพิ่มข้อมูลสมาชิกใหม่"
+                            : "แก้ไขข้อมูลสมาชิก",
+                },
+                () => {
+                    if (query.id) {
+                        this.getMemberDetail(query.id);
+                    } else {
+                        this.formRef.current.resetFields();
+                    }
+                }
+            );
+        }, 300);
+    }
+
+    async getSkills() {
+        this.setState({ isLoading: true });
+        try {
+            let skills = await getSkillListApi();
+            this.setState({ skills });
+        } catch (error) {
+        } finally {
+            setTimeout(() => {
+                this.setState({ isLoading: false });
+            }, 300);
+        }
+    }
+
+    async getMemberDetail(id) {
+        this.setState({ isLoading: true });
+        try {
+            let member = await getMemberDetailApi({ params: { id } });
+            this.setState({ member });
+            this.formRef.current?.setFieldsValue({
+                member_email: member.email,
+                member_password: member.password,
+                member_confirm_password: member.password,
+                firstname: member.firstname,
+                lastname: member.lastname,
+                phone_number: member.phone_number,
+                birthdate: dayjs(member.birthdate, "YYYY-MM-DD"),
+                gender: member.gender,
+                skills: member.skills.map((skill) => skill.id),
+            });
+        } catch (error) {
+        } finally {
+            setTimeout(() => {
+                this.setState({ isLoading: false });
+            }, 300);
+        }
+    }
+
+    async addMemberDetail(data) {
+        this.setState({ isLoading: true });
+        try {
+            let res = await addMemberDetailApi({ body: data });
+            Modal.success({
+                title: "สำเร็จ",
+                content: res.message,
+                centered: true,
+                maskClosable: true,
+                okText: "ตกลง",
+                afterClose: () => {
+                    this.formRef.current.resetFields();
+                },
+            });
+        } catch (error) {
+            Modal.error({
+                title: "ไม่สำเร็จ",
+                content: error?.message,
+                centered: true,
+                maskClosable: true,
+                okText: "ตกลง",
+            });
+        } finally {
+            setTimeout(() => {
+                this.setState({ isLoading: false });
+            }, 300);
+        }
+    }
+
+    async updateMemberDetail(data) {
+        let { member } = this.state;
+        this.setState({ isLoading: true });
+        try {
+            let res = await updateMemberDetailApi({
+                params: { id: member.id },
+                body: data,
+            });
+            Modal.success({
+                title: "สำเร็จ",
+                content: res.message,
+                centered: true,
+                maskClosable: true,
+                okText: "ตกลง",
+                afterClose: () => {
+                    this.getMemberDetail(member.id);
+                },
+            });
+        } catch (error) {
+            Modal.error({
+                title: "ไม่สำเร็จ",
+                content: error?.message,
+                centered: true,
+                maskClosable: true,
+                okText: "ตกลง",
+            });
+        } finally {
+            setTimeout(() => {
+                this.setState({ isLoading: false });
+            }, 300);
+        }
+    }
+
+    onSubmit(values = {}) {
+        let { action } = this.state;
+        let data = {
+            id_skills: values.skills.join(","),
+            email: values.member_email,
+            password: values.member_password,
+            gender: values.gender,
+            birthdate: values.birthdate.format("YYYY-MM-DD"),
+            phone_number: values.phone_number,
+            firstname: values.firstname,
+            lastname: values.lastname,
+        };
+
+        if (action === "add") {
+            this.addMemberDetail(data);
+        } else if (action === "edit") {
+            this.updateMemberDetail(data);
+        }
+    }
+
+    async onBack() {
+        await Router.back();
+    }
+
+    render() {
+        let { isLoading, skills, action, title, member = {} } = this.state;
+
+        return (
+            <>
+                <Head>
+                    <title>{title}</title>
+                    <meta name="description" content={title} />
+                </Head>
+                <MainLayout>
+                    <h1 className="page-title fs-2 text-center fw-bold mt-0 mb-4">
+                        {title}
+                    </h1>
+                    <Row justify="center">
+                        <Col md={{ span: 14 }}>
+                            <Form
+                                ref={this.formRef}
+                                name="info_form"
+                                layout="vertical"
+                                requiredMark={true}
+                                onFinish={this.onSubmit.bind(this)}
+                                onSubmitCapture={() =>
+                                    this.setState({ isSubmitted: true })
+                                }
+                                autoComplete="off"
+                            >
+                                <Divider orientation="left" className="fw-bold">
+                                    ข้อมูลเข้าสู่ระบบ
+                                </Divider>
+                                <Row gutter={15} className="pb-3">
+                                    <Col span={24}>
+                                        <Form.Item
+                                            label={
+                                                <div className="fs-6">
+                                                    อีเมล
+                                                </div>
+                                            }
+                                            name="member_email"
+                                            rules={[
+                                                {
+                                                    required: true,
+                                                    message: "โปรดระบุ อีเมล",
+                                                },
+                                                {
+                                                    type: "email",
+                                                    message:
+                                                        "รูปแบบอีเมลไม่ถูกต้อง",
+                                                },
+                                            ]}
+                                        >
+                                            <Input
+                                                size="large"
+                                                name="member_email"
+                                                autoComplete="off"
+                                            />
+                                        </Form.Item>
+                                    </Col>
+                                    <Col span={12}>
+                                        <Form.Item
+                                            name="member_password"
+                                            label={
+                                                <div className="fs-6">
+                                                    รหัสผ่าน
+                                                </div>
+                                            }
+                                            rules={[
+                                                {
+                                                    required: true,
+                                                    message:
+                                                        "โปรดระบุ รหัสผ่าน",
+                                                },
+                                                {
+                                                    min: 8,
+                                                    message:
+                                                        "รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร",
+                                                },
+                                            ]}
+                                        >
+                                            <Input.Password
+                                                name="member_password"
+                                                size="large"
+                                                autoComplete="off"
+                                            />
+                                        </Form.Item>
+                                    </Col>
+                                    <Col span={12}>
+                                        <Form.Item
+                                            name="member_confirm_password"
+                                            label={
+                                                <div className="fs-6">
+                                                    ยืนยันรหัสผ่าน
+                                                </div>
+                                            }
+                                            hasFeedback
+                                            rules={[
+                                                {
+                                                    required: true,
+                                                    message:
+                                                        "โปรดยืนยัน รหัสผ่าน",
+                                                },
+                                                ({ getFieldValue }) => ({
+                                                    validator(_, value) {
+                                                        if (
+                                                            !value ||
+                                                            getFieldValue(
+                                                                "member_password"
+                                                            ) === value
+                                                        ) {
+                                                            return Promise.resolve();
+                                                        }
+                                                        return Promise.reject(
+                                                            new Error(
+                                                                "รหัสผ่านทั้งคู่ไม่ตรงกัน"
+                                                            )
+                                                        );
+                                                    },
+                                                }),
+                                            ]}
+                                        >
+                                            <Input.Password
+                                                name="member_password"
+                                                size="large"
+                                                autoComplete="off"
+                                            />
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+
+                                <Divider orientation="left" className="fw-bold">
+                                    ข้อมูลส่วนตัว
+                                </Divider>
+                                <Row gutter={15}>
+                                    <Col span={12}>
+                                        <Form.Item
+                                            label={
+                                                <div className="fs-6">ชื่อ</div>
+                                            }
+                                            name="firstname"
+                                            rules={[
+                                                {
+                                                    required: true,
+                                                    message: "โปรดระบุ ชื่อ",
+                                                },
+                                            ]}
+                                        >
+                                            <Input size="large" />
+                                        </Form.Item>
+                                    </Col>
+                                    <Col span={12}>
+                                        <Form.Item
+                                            label={
+                                                <div className="fs-6">
+                                                    นามสกุล
+                                                </div>
+                                            }
+                                            name="lastname"
+                                            rules={[
+                                                {
+                                                    required: true,
+                                                    message: "โปรดระบุ นามสกุล",
+                                                },
+                                            ]}
+                                        >
+                                            <Input size="large" />
+                                        </Form.Item>
+                                    </Col>
+                                    <Col span={12}>
+                                        <Form.Item
+                                            label={
+                                                <div className="fs-6">เพศ</div>
+                                            }
+                                            name="gender"
+                                            rules={[
+                                                {
+                                                    required: true,
+                                                    message: "โปรดระบุ เพศ",
+                                                },
+                                            ]}
+                                        >
+                                            <Select
+                                                placeholder="โปรดเลือกเพศ"
+                                                size="large"
+                                            >
+                                                {GENDERS.map((gender) => (
+                                                    <Option
+                                                        key={gender.id}
+                                                        value={gender.key}
+                                                    >
+                                                        {gender.name}
+                                                    </Option>
+                                                ))}
+                                            </Select>
+                                        </Form.Item>
+                                    </Col>
+                                    <Col span={12}>
+                                        <Form.Item
+                                            label={
+                                                <div className="fs-6">
+                                                    วันเกิด
+                                                </div>
+                                            }
+                                            name="birthdate"
+                                            rules={[
+                                                {
+                                                    required: true,
+                                                    message: "โปรดระบุ วันเกิด",
+                                                },
+                                            ]}
+                                        >
+                                            <DatePicker
+                                                size="large"
+                                                format="DD/MM/YYYY"
+                                                placeholder="โปรดเลือกวัน"
+                                                style={{ width: "100%" }}
+                                            />
+                                        </Form.Item>
+                                    </Col>
+                                    <Col span={12}>
+                                        <Form.Item
+                                            label={
+                                                <div className="fs-6">
+                                                    เบอร์โทร
+                                                </div>
+                                            }
+                                            name="phone_number"
+                                            rules={[
+                                                {
+                                                    required: true,
+                                                    message:
+                                                        "โปรดระบุ เบอร์โทร",
+                                                },
+                                            ]}
+                                        >
+                                            <Input size="large" />
+                                        </Form.Item>
+                                    </Col>
+                                    <Col span={12}>
+                                        <Form.Item
+                                            label={
+                                                <div className="fs-6">
+                                                    ทักษะ
+                                                </div>
+                                            }
+                                            name="skills"
+                                            rules={[
+                                                {
+                                                    required: true,
+                                                    message: "โปรดระบุ ทักษะ",
+                                                },
+                                            ]}
+                                        >
+                                            <Select
+                                                placeholder="โปรดเลือกทักษะ (ได้มากกว่า 1 ตัวเลือก)"
+                                                size="large"
+                                                mode="tags"
+                                                tokenSeparators={[", ", ","]}
+                                            >
+                                                {skills.map((skill) => (
+                                                    <Option
+                                                        key={skill.id}
+                                                        value={skill.id}
+                                                    >
+                                                        {skill.name}
+                                                    </Option>
+                                                ))}
+                                            </Select>
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+
+                                <div className="text-center pt-3">
+                                    <Button
+                                        ghost
+                                        danger
+                                        type="primary"
+                                        size="large"
+                                        className="me-3"
+                                        onClick={() => this.onBack()}
+                                    >
+                                        ยกเลิก
+                                    </Button>
+                                    <Button
+                                        htmlType="submit"
+                                        type="primary"
+                                        size="large"
+                                    >
+                                        บันทึกข้อมูล
+                                    </Button>
+                                </div>
+                            </Form>
+                        </Col>
+                    </Row>
+                </MainLayout>
+                <Loading isOpen={isLoading} />
+            </>
+        );
+    }
+}
+
+export default DashboardMemberDetail;
