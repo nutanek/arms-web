@@ -11,6 +11,10 @@ const MEMBER_DETAIL = `${API_URL_V1}/member-detail?id=:id`;
 const MEMBER_DETAIL_ADD = `${API_URL_V1}/member-detail-add`;
 const MEMBER_DETAIL_UPDATE = `${API_URL_V1}/member-detail-update?id=:id`;
 const MEMBER_DETAIL_REMOVE = `${API_URL_V1}/member-detail-remove?id=:id`;
+const REPORT_LIST = `${API_URL_V1}/report-list?page=:page&size=:size&keyword=:keyword`;
+const REPORT_DETAIL = `${API_URL_V1}/report-detail?id=:id`;
+const REPORT_DETAIL_ADD = `${API_URL_V1}/report-detail-add`;
+const REPORT_STATUS_UPDATE = `${API_URL_V1}/report-status-update?id=:id`;
 const SKILL_LIST = `${API_URL_V1}/skill-list`;
 const JOB_DETAIL_ADD = `${API_URL_V1}/job-detail-add`;
 
@@ -49,10 +53,39 @@ export const updateMemberDetailApi = async (props) =>
         url: MEMBER_DETAIL_UPDATE,
         method: "POST",
     });
+
 export const removeMemberDetailApi = async (props) =>
     callApi({
         ...props,
         url: MEMBER_DETAIL_REMOVE,
+        method: "POST",
+    });
+
+export const getReportListApi = async (props) =>
+    callApi({
+        ...props,
+        url: REPORT_LIST,
+        method: "GET",
+    });
+
+export const getReportDetailApi = async (props) =>
+    callApi({
+        ...props,
+        url: REPORT_DETAIL,
+        method: "GET",
+    });
+
+export const addReportDetailApi = async (props) =>
+    callApi({
+        ...props,
+        url: REPORT_DETAIL_ADD,
+        method: "POST",
+    });
+
+export const updateReportStatusApi = async (props) =>
+    callApi({
+        ...props,
+        url: REPORT_STATUS_UPDATE,
         method: "POST",
     });
 
