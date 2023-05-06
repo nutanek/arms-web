@@ -1,11 +1,15 @@
 import qs from "qs";
 import axios from "axios";
 import { API_PATH } from "./../constants/config";
+import { getLocalAccessToken } from "./../services/appServices";
 
 const API_URL_V1 = `${API_PATH}/v1`;
 
 // Api Constants
+const SIGNIN = `${API_URL_V1}/signin`;
+const SIGNUP = `${API_URL_V1}/signup`;
 const UPLOAD_IMAGE = `${API_URL_V1}/upload`;
+
 const MEMBER_LIST = `${API_URL_V1}/member-list?page=:page&size=:size&keyword=:keyword&request_account=:request_account`;
 const MEMBER_DETAIL = `${API_URL_V1}/member-detail?id=:id`;
 const MEMBER_DETAIL_ADD = `${API_URL_V1}/member-detail-add`;
@@ -13,12 +17,25 @@ const MEMBER_DETAIL_UPDATE = `${API_URL_V1}/member-detail-update?id=:id`;
 const MEMBER_DETAIL_REMOVE = `${API_URL_V1}/member-detail-remove?id=:id`;
 const MEMBER_ACCOUNT_REQUEST = `${API_URL_V1}/member-account-request`;
 const MEMBER_ACCOUNT_STATUS_UPDATE = `${API_URL_V1}/member-account-status-update?id=:id`;
+
 const REPORT_LIST = `${API_URL_V1}/report-list?page=:page&size=:size&keyword=:keyword`;
 const REPORT_DETAIL = `${API_URL_V1}/report-detail?id=:id`;
 const REPORT_DETAIL_ADD = `${API_URL_V1}/report-detail-add`;
 const REPORT_STATUS_UPDATE = `${API_URL_V1}/report-status-update?id=:id`;
-const SKILL_LIST = `${API_URL_V1}/skill-list`;
+
+const JOB_LIST = `${API_URL_V1}/job-list?page=:page&size=:size&keyword=:keyword&id_employer=:id_employer&id_employee=:id_employee`;
+const JOB_DETAIL = `${API_URL_V1}/job-detail?id=:id`;
 const JOB_DETAIL_ADD = `${API_URL_V1}/job-detail-add`;
+// const REPORT_STATUS_UPDATE = `${API_URL_V1}/report-status-update?id=:id`;
+
+const SKILL_LIST = `${API_URL_V1}/skill-list`;
+
+export const signinApi = async (props) =>
+    callApi({
+        ...props,
+        url: SIGNIN,
+        method: "POST",
+    });
 
 export const uploadImageApi = async (props) =>
     callApi({
@@ -112,6 +129,20 @@ export const getSkillListApi = async (props) =>
         method: "GET",
     });
 
+export const getJobListApi = async (props) =>
+    callApi({
+        ...props,
+        url: JOB_LIST,
+        method: "GET",
+    });
+
+export const getJobDetailApi = async (props) =>
+    callApi({
+        ...props,
+        url: JOB_DETAIL,
+        method: "GET",
+    });
+
 export const addJobDetailApi = async (props) =>
     callApi({
         ...props,
@@ -127,7 +158,7 @@ const generateApiUrl = (url, params) => {
         }
     }
 
-    let token = "YWFhQGthbi5jb206MTIzNDU2";
+    let token = getLocalAccessToken();
 
     if (url.includes("?")) {
         apiUrl = `${apiUrl}&token=${token}`;
@@ -142,9 +173,6 @@ const generateHeader = (req, dataType) => {
     let header = {
         Accept: "application/json, text/plain, */*",
         "Accept-Language": "en-US,en;q=0.9",
-        // Authorization: accessToken
-        //     ? `Bearer ${accessToken}`
-        //     : `Basic ${APP_API_KEY}`,
         "Content-Type":
             dataType == "MULTIPART"
                 ? "multipart/form-data; charset=UTF-8"

@@ -29,3 +29,11 @@ export const MEMBER_TYPES = {
     employer: { name: "ผู้ว่าจ้าง" },
     na: { name: "ไม่ระบุ" },
 };
+
+export const JOB_STATUS = {
+    1: { name: "เปิดรับสมัคร", color: "#8c8c8c" },
+    2: { name: "ขอรับงาน", color: "#faad14" },
+    3: { name: "มอบหมายงานแล้ว", color: "#faad14" },
+    4: { name: "สำเร็จ", color: "#389e0d" },
+    5: { name: "ยกเลิก", color: "#389e0d" },
+};

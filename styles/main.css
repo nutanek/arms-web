@@ -327,3 +327,29 @@ a {
 .accont-sidebar .menu-list-wrapper .menu-list .menu-item.active {
     color: #0f79af;
 }
+
+.authen-card-container {
+    border-radius: 8px;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 0px 24px;
+    overflow: hidden;
+}
+.authen-card-container .header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    padding: 30px;
+    background-color: var(--main-app-color);
+}
+.authen-card-container .header img {
+    height: 50px;
+}
+.authen-card-container .header .name {
+    color: #fff;
+}
+.authen-card-container .body {
+    padding: 30px;
+}
+.authen-card-container button {
+    border-radius: 8px;
+}
