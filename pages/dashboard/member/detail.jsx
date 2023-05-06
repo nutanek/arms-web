@@ -274,7 +274,7 @@ class DashboardMemberDetail extends Component {
                                             </div>
                                             <Upload
                                                 beforeUpload={() => false}
-                                                accept="image/png, image/gif, image/jpeg, image/jpg"
+                                                accept="image/png, image/jpeg, image/jpg"
                                                 fileList={[]}
                                                 onChange={this.onChangeImage.bind(
                                                     this

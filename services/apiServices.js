@@ -6,11 +6,13 @@ const API_URL_V1 = `${API_PATH}/v1`;
 
 // Api Constants
 const UPLOAD_IMAGE = `${API_URL_V1}/upload`;
-const MEMBER_LIST = `${API_URL_V1}/member-list?page=:page&size=:size&keyword=:keyword`;
+const MEMBER_LIST = `${API_URL_V1}/member-list?page=:page&size=:size&keyword=:keyword&request_account=:request_account`;
 const MEMBER_DETAIL = `${API_URL_V1}/member-detail?id=:id`;
 const MEMBER_DETAIL_ADD = `${API_URL_V1}/member-detail-add`;
 const MEMBER_DETAIL_UPDATE = `${API_URL_V1}/member-detail-update?id=:id`;
 const MEMBER_DETAIL_REMOVE = `${API_URL_V1}/member-detail-remove?id=:id`;
+const MEMBER_ACCOUNT_REQUEST = `${API_URL_V1}/member-account-request`;
+const MEMBER_ACCOUNT_STATUS_UPDATE = `${API_URL_V1}/member-account-status-update?id=:id`;
 const REPORT_LIST = `${API_URL_V1}/report-list?page=:page&size=:size&keyword=:keyword`;
 const REPORT_DETAIL = `${API_URL_V1}/report-detail?id=:id`;
 const REPORT_DETAIL_ADD = `${API_URL_V1}/report-detail-add`;
@@ -58,6 +60,20 @@ export const removeMemberDetailApi = async (props) =>
     callApi({
         ...props,
         url: MEMBER_DETAIL_REMOVE,
+        method: "POST",
+    });
+
+export const requestMemberAccountApi = async (props) =>
+    callApi({
+        ...props,
+        url: MEMBER_ACCOUNT_REQUEST,
+        method: "POST",
+    });
+
+export const updateMemberAccountStatusApi = async (props) =>
+    callApi({
+        ...props,
+        url: MEMBER_ACCOUNT_STATUS_UPDATE,
         method: "POST",
     });
 

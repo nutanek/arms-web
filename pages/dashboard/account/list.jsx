@@ -14,9 +14,12 @@ import {
     Tag,
     message,
 } from "antd";
-import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import { FileSearchOutlined } from "@ant-design/icons";
 import moment from "moment";
-import { ACCOUNT_APPROVE_STATUS } from "./../../../constants/appConstants";
+import {
+    ACCOUNT_APPROVE_STATUS,
+    MEMBER_TYPES,
+} from "./../../../constants/appConstants";
 import {
     getMemberListApi,
     removeMemberDetailApi,
@@ -25,11 +28,11 @@ import MainLayout from "./../../../components/Layout/MainLayout";
 import AccountLayout from "./../../../components/Layout/AccountLayout";
 import Loading from "./../../../components/Utility/Modal/Loading";
 
-const title = "สมาชิกทั้งหมด";
+const title = "รายการที่รออนุมัติบัญชี";
 
 const pageSize = 10;
 
-class DashboardMemberList extends Component {
+class DashboardAccountList extends Component {
     state = {
         isLoading: false,
         members: [],
@@ -59,6 +62,7 @@ class DashboardMemberList extends Component {
                     page: this.state.page,
                     size: pageSize,
                     keyword: this.state.keyword,
+                    request_account: "yes",
                 },
             });
             this.setState({
@@ -99,7 +103,7 @@ class DashboardMemberList extends Component {
 
     async onChangePage(page) {
         await Router.push(
-            `/dashboard/member/list?page=${page}&keyword=${this.state.keyword}`
+            `/dashboard/account/list?page=${page}&keyword=${this.state.keyword}`
         );
         this.setState({ page }, () => {
             this.getMemberList();
@@ -107,7 +111,7 @@ class DashboardMemberList extends Component {
     }
 
     async onSearch(keyword = "") {
-        await Router.push(`/dashboard/member/list?page=1&keyword=${keyword}`);
+        await Router.push(`/dashboard/account/list?page=1&keyword=${keyword}`);
         this.setState({ keyword, page: 1 }, () => {
             this.getMemberList();
         });
@@ -119,6 +123,7 @@ class DashboardMemberList extends Component {
 
     render() {
         let { isLoading, members, page, totalPage, keyword } = this.state;
+
         return (
             <>
                 <Head>
@@ -130,7 +135,7 @@ class DashboardMemberList extends Component {
                         <Card
                             type="inner"
                             title={
-                                <Row justify="space-between" className="pt-3">
+                                <Row justify="space-between" className="py-3">
                                     <Col xs={12} lg={8}>
                                         <Input.Search
                                             placeholder="ค้นหาสมาชิกด้วย ชื่อ และอีเมล"
@@ -144,20 +149,6 @@ class DashboardMemberList extends Component {
                                             }
                                             onSearch={this.onSearch.bind(this)}
                                         />
-                                    </Col>
-                                    <Col span={12} className="pb-3 text-end">
-                                        <Link
-                                            href={`/dashboard/member/detail?action=add`}
-                                        >
-                                            <Button
-                                                type="primary"
-                                                size="large"
-                                                icon={<PlusOutlined />}
-                                                className="bg-success"
-                                            >
-                                                เพิ่มสมาชิกใหม่
-                                            </Button>
-                                        </Link>
                                     </Col>
                                 </Row>
                             }
@@ -191,9 +182,9 @@ class DashboardMemberList extends Component {
                                         className: " fs-6",
                                     },
                                     {
-                                        title: "วันที่ลงทะเบียน",
-                                        dataIndex: "create_date",
-                                        key: "create_date",
+                                        title: "วันที่ขออนุมัติ",
+                                        dataIndex: "request_approve_datetime",
+                                        key: "request_approve_datetime",
                                         align: "center",
                                         className: "fs-6",
                                         render: (value) => (
@@ -205,21 +196,14 @@ class DashboardMemberList extends Component {
                                         ),
                                     },
                                     {
-                                        title: "สถานะบัญชี",
-                                        dataIndex: "approved_status",
-                                        key: "approved_status",
+                                        title: "ประเภทสมาชิกที่ขอ",
+                                        dataIndex: "name",
+                                        key: "name",
                                         align: "center",
                                         className: "fs-6",
-                                        render: (value) => {
-                                            let status =
-                                                ACCOUNT_APPROVE_STATUS[value] ||
-                                                {};
-                                            return (
-                                                <Tag color={status.color}>
-                                                    {status.name}
-                                                </Tag>
-                                            );
-                                        },
+                                        render: (value, record) =>
+                                            MEMBER_TYPES[record.member_type]
+                                                ?.name,
                                     },
                                     {
                                         title: "",
@@ -233,37 +217,17 @@ class DashboardMemberList extends Component {
                                                 }}
                                             >
                                                 <Link
-                                                    href={`/dashboard/member/detail?id=${record.id}`}
+                                                    href={`/dashboard/account/detail?id=${record.id}`}
                                                 >
                                                     <Button
-                                                        type="primary"
-                                                        icon={<EditOutlined />}
-                                                    ></Button>
-                                                </Link>
-
-                                                <Popconfirm
-                                                    title={
-                                                        "คุณต้องการลบสมาชิกรายนี้ใช่ไหม?"
-                                                    }
-                                                    onConfirm={() =>
-                                                        this.removeMemberList(
-                                                            record.id
-                                                        )
-                                                    }
-                                                    okText={"ยืนยัน"}
-                                                    cancelText={"ยกเลิก"}
-                                                >
-                                                    <Button
-                                                        style={{
-                                                            marginLeft: 10,
-                                                        }}
-                                                        danger
                                                         type="primary"
                                                         icon={
-                                                            <DeleteOutlined />
+                                                            <FileSearchOutlined />
                                                         }
-                                                    ></Button>
-                                                </Popconfirm>
+                                                    >
+                                                        รายละเอียด
+                                                    </Button>
+                                                </Link>
                                             </div>
                                         ),
                                     },
@@ -279,4 +243,4 @@ class DashboardMemberList extends Component {
     }
 }
 
-export default DashboardMemberList;
+export default DashboardAccountList;

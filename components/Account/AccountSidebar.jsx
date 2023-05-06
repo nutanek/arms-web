@@ -71,7 +71,19 @@ const AccountSidebar = (props) => {
                             <div className="icon">
                                 <UserOutlined />
                             </div>
-                            <div className="text">สมาชิกทั้งหมด</div>
+                            <div className="text">สมาชิก</div>
+                        </div>
+                    </Link>
+                    <Link href={`/dashboard/account/list`}>
+                        <div
+                            className={`menu-item pointer ${
+                                true ? "active" : ""
+                            }`}
+                        >
+                            <div className="icon">
+                                <UserOutlined />
+                            </div>
+                            <div className="text">รายการขออนุมัติบัญชี</div>
                         </div>
                     </Link>
                     <Link href={`/dashboard/report/list`}>
@@ -83,7 +95,7 @@ const AccountSidebar = (props) => {
                             <div className="icon">
                                 <UserOutlined />
                             </div>
-                            <div className="text">รายงานปัญหาทั้งหมด</div>
+                            <div className="text">รายงานปัญหา</div>
                         </div>
                     </Link>
 

@@ -22,3 +22,10 @@ export const REPORT_STATUS = {
     3: { name: "ดำเนินการเสร็จสิ้น", color: "#389e0d" },
     4: { name: "ยกเลิกคำร้อง", color: "#f5222d" },
 };
+
+export const MEMBER_TYPES = {
+    admin: { name: "ผู้ดูแลระบบ" },
+    employee: { name: "ศิลปิน" },
+    employer: { name: "ผู้ว่าจ้าง" },
+    na: { name: "ไม่ระบุ" },
+};
