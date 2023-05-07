@@ -51,7 +51,7 @@ class DashboardAccountList extends Component {
                 },
                 () => this.getMemberList()
             );
-        }, 100);
+        }, 300);
     }
 
     async getMemberList() {
@@ -63,6 +63,8 @@ class DashboardAccountList extends Component {
                     size: pageSize,
                     keyword: this.state.keyword,
                     request_account: "yes",
+                    approved_status: 0,
+                    member_type: "all",
                 },
             });
             this.setState({

@@ -9,6 +9,7 @@ import {
     getReportDetailApi,
     updateReportStatusApi,
 } from "./../../../services/apiServices";
+import { getLocalUserInfo } from "@/services/appServices";
 import MainLayout from "./../../../components/Layout/MainLayout";
 import AccountLayout from "./../../../components/Layout/AccountLayout";
 import Loading from "./../../../components/Utility/Modal/Loading";
@@ -20,11 +21,14 @@ class DashboarReportDetail extends Component {
         isLoadng: false,
         isSubmitted: false,
         report: {},
+        userInfo: {},
     };
 
     formRef = React.createRef();
 
     componentDidMount() {
+        let userInfo = getLocalUserInfo();
+        this.setState({ userInfo });
         setTimeout(() => {
             let query = Router.query;
             this.getReportDetail(query.id);
@@ -92,7 +96,7 @@ class DashboarReportDetail extends Component {
     }
 
     render() {
-        let { isLoading, report } = this.state;
+        let { isLoading, report, userInfo } = this.state;
 
         let status = REPORT_STATUS[report.report_status] || {};
 
@@ -157,68 +161,72 @@ class DashboarReportDetail extends Component {
                                         </Button>
                                     </Col>
                                     <Col span={18}>
-                                        <div className="text-end">
-                                            {[1, 2].includes(
-                                                report.report_status
-                                            ) && (
-                                                <Popconfirm
-                                                    title={
-                                                        "คุณต้องการยกเลิกคำร้องนี้ใช่ไหม?"
-                                                    }
-                                                    onConfirm={() =>
-                                                        this.updateReportStatus(
-                                                            report.id,
-                                                            4
-                                                        )
-                                                    }
-                                                    okText={"ยืนยัน"}
-                                                    cancelText={"ยกเลิก"}
-                                                >
+                                        {["admin"].includes(
+                                            userInfo.member_type
+                                        ) && (
+                                            <div className="text-end">
+                                                {[1, 2].includes(
+                                                    report.report_status
+                                                ) && (
+                                                    <Popconfirm
+                                                        title={
+                                                            "คุณต้องการยกเลิกคำร้องนี้ใช่ไหม?"
+                                                        }
+                                                        onConfirm={() =>
+                                                            this.updateReportStatus(
+                                                                report.id,
+                                                                4
+                                                            )
+                                                        }
+                                                        okText={"ยืนยัน"}
+                                                        cancelText={"ยกเลิก"}
+                                                    >
+                                                        <Button
+                                                            danger
+                                                            type="primary"
+                                                            size="large"
+                                                            className="ms-2"
+                                                        >
+                                                            ยกเลิกคำร้อง
+                                                        </Button>
+                                                    </Popconfirm>
+                                                )}
+                                                {[1].includes(
+                                                    report.report_status
+                                                ) && (
                                                     <Button
-                                                        danger
                                                         type="primary"
                                                         size="large"
                                                         className="ms-2"
+                                                        onClick={() =>
+                                                            this.updateReportStatus(
+                                                                report.id,
+                                                                2
+                                                            )
+                                                        }
                                                     >
-                                                        ยกเลิกคำร้อง
+                                                        ดำเนินการ
                                                     </Button>
-                                                </Popconfirm>
-                                            )}
-                                            {[1].includes(
-                                                report.report_status
-                                            ) && (
-                                                <Button
-                                                    type="primary"
-                                                    size="large"
-                                                    className="ms-2"
-                                                    onClick={() =>
-                                                        this.updateReportStatus(
-                                                            report.id,
-                                                            2
-                                                        )
-                                                    }
-                                                >
-                                                    ดำเนินการ
-                                                </Button>
-                                            )}
-                                            {[2].includes(
-                                                report.report_status
-                                            ) && (
-                                                <Button
-                                                    type="primary"
-                                                    size="large"
-                                                    className="ms-2 bg-success"
-                                                    onClick={() =>
-                                                        this.updateReportStatus(
-                                                            report.id,
-                                                            3
-                                                        )
-                                                    }
-                                                >
-                                                    ดำเนินการเสร็จสิ้น
-                                                </Button>
-                                            )}
-                                        </div>
+                                                )}
+                                                {[2].includes(
+                                                    report.report_status
+                                                ) && (
+                                                    <Button
+                                                        type="primary"
+                                                        size="large"
+                                                        className="ms-2 bg-success"
+                                                        onClick={() =>
+                                                            this.updateReportStatus(
+                                                                report.id,
+                                                                3
+                                                            )
+                                                        }
+                                                    >
+                                                        ดำเนินการเสร็จสิ้น
+                                                    </Button>
+                                                )}
+                                            </div>
+                                        )}
                                     </Col>
                                 </Row>
                             </Col>

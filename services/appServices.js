@@ -1,5 +1,6 @@
 export const KEY_ACCESS_TOKEN = "arms_access_token";
 export const KEY_USER_INFO = "arms_user_info";
+import { assetPrefix } from "../next.config";
 
 export function getLocalAccessToken() {
     const token = localStorage.getItem(KEY_ACCESS_TOKEN);
@@ -30,14 +31,9 @@ export function clearAuth() {
     localStorage.removeItem(KEY_USER_INFO);
 }
 
-export function signout({ isCallback }) {
+export function signout() {
     clearAuth();
-    if (isCallback) {
-        let callbackUrl = encodeURIComponent(window.location.href);
-        // window.location.replace(`${ROOT_PATH}/login?callback=${callbackUrl}`);
-    } else {
-        window.location.reload();
-    }
+    window.location.replace(`${assetPrefix}/signin`);
 }
 
 export function isLoggedIn() {

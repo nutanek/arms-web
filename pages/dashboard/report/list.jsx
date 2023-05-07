@@ -17,6 +17,7 @@ import { PlusOutlined, FileSearchOutlined } from "@ant-design/icons";
 import moment from "moment";
 import { REPORT_STATUS } from "./../../../constants/appConstants";
 import { getReportListApi } from "./../../../services/apiServices";
+import { getLocalUserInfo } from "@/services/appServices";
 import MainLayout from "./../../../components/Layout/MainLayout";
 import AccountLayout from "./../../../components/Layout/AccountLayout";
 import Loading from "./../../../components/Utility/Modal/Loading";
@@ -44,10 +45,11 @@ class DashboardReportList extends Component {
                 },
                 () => this.getReportList()
             );
-        }, 100);
+        }, 300);
     }
 
     async getReportList() {
+        let userInfo = getLocalUserInfo();
         this.setState({ isLoading: true });
         try {
             let res = await getReportListApi({
@@ -55,6 +57,8 @@ class DashboardReportList extends Component {
                     page: this.state.page,
                     size: pageSize,
                     keyword: this.state.keyword,
+                    id_member:
+                        userInfo.member_type === "admin" ? 0 : userInfo.id,
                 },
             });
             this.setState({

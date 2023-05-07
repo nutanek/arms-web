@@ -4,19 +4,19 @@ import Link from "next/link";
 import Router from "next/router";
 import { Row, Col, Alert, Pagination } from "antd";
 import { assetPrefix } from "./../next.config";
-import { getJobListApi } from "./../services/apiServices";
+import { getMemberListApi } from "./../services/apiServices";
 import MainLayout from "./../components/Layout/MainLayout";
-import JobCard from "./../components/Job/JobCard";
+import ArtistCard from "./../components/Artist/ArtistCard";
 import Loading from "./../components/Utility/Modal/Loading";
 
-const title = "หางาน";
+const title = "ศิลปิน";
 
 const pageSize = 12;
 
-class Home extends Component {
+class Artists extends Component {
     state = {
         isLoading: false,
-        jobs: [],
+        members: [],
         page: 1,
         totalPage: 5,
         keyword: "",
@@ -31,26 +31,26 @@ class Home extends Component {
                     page,
                     keyword,
                 },
-                () => this.getJobList()
+                () => this.getMemberList()
             );
         }, 300);
     }
 
-    async getJobList() {
+    async getMemberList() {
         this.setState({ isLoading: true });
         try {
-            let res = await getJobListApi({
+            let res = await getMemberListApi({
                 params: {
                     page: this.state.page,
                     size: pageSize,
                     keyword: this.state.keyword,
-                    id_employer: 0,
-                    id_employee: 0,
-                    status: 1,
+                    request_account: 'no',
+                    approved_status: 2,
+                    member_type: 'employee',
                 },
             });
             this.setState({
-                jobs: res.data,
+                members: res.data,
                 page: res.page,
                 totalPage: res.total_page,
             });
@@ -64,14 +64,14 @@ class Home extends Component {
     }
 
     async onChangePage(page) {
-        await Router.push(`?page=${page}`);
+        await Router.push(`/artists?page=${page}`);
         this.setState({ page }, () => {
-            this.getJobList();
+            this.getMemberList();
         });
     }
 
     render() {
-        let { isLoading, jobs, page, totalPage } = this.state;
+        let { isLoading, members, page, totalPage } = this.state;
         return (
             <>
                 <Head>
@@ -89,14 +89,14 @@ class Home extends Component {
                             { xs: 16, sm: 16, md: 24, lg: 32 },
                         ]}
                     >
-                        {jobs.map((job) => (
+                        {members.map((member) => (
                             <Col
-                                key={job.id}
+                                key={member.id}
                                 xs={{ span: 12 }}
                                 md={{ span: 8 }}
                                 lg={{ span: 6 }}
                             >
-                                <JobCard item={job} onViewDetail={() => {}} />
+                                <ArtistCard item={member} />
                             </Col>
                         ))}
                     </Row>
@@ -117,4 +117,4 @@ class Home extends Component {
     }
 }
 
-export default Home;
+export default Artists;

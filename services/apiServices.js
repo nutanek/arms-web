@@ -10,7 +10,7 @@ const SIGNIN = `${API_URL_V1}/signin`;
 const SIGNUP = `${API_URL_V1}/signup`;
 const UPLOAD_IMAGE = `${API_URL_V1}/upload`;
 
-const MEMBER_LIST = `${API_URL_V1}/member-list?page=:page&size=:size&keyword=:keyword&request_account=:request_account`;
+const MEMBER_LIST = `${API_URL_V1}/member-list?page=:page&size=:size&keyword=:keyword&request_account=:request_account&approved_status=:approved_status&member_type=:member_type`;
 const MEMBER_DETAIL = `${API_URL_V1}/member-detail?id=:id`;
 const MEMBER_DETAIL_ADD = `${API_URL_V1}/member-detail-add`;
 const MEMBER_DETAIL_UPDATE = `${API_URL_V1}/member-detail-update?id=:id`;
@@ -18,14 +18,17 @@ const MEMBER_DETAIL_REMOVE = `${API_URL_V1}/member-detail-remove?id=:id`;
 const MEMBER_ACCOUNT_REQUEST = `${API_URL_V1}/member-account-request`;
 const MEMBER_ACCOUNT_STATUS_UPDATE = `${API_URL_V1}/member-account-status-update?id=:id`;
 
-const REPORT_LIST = `${API_URL_V1}/report-list?page=:page&size=:size&keyword=:keyword`;
+const REPORT_LIST = `${API_URL_V1}/report-list?page=:page&size=:size&keyword=:keyword&id_member=:id_member`;
 const REPORT_DETAIL = `${API_URL_V1}/report-detail?id=:id`;
 const REPORT_DETAIL_ADD = `${API_URL_V1}/report-detail-add`;
 const REPORT_STATUS_UPDATE = `${API_URL_V1}/report-status-update?id=:id`;
 
-const JOB_LIST = `${API_URL_V1}/job-list?page=:page&size=:size&keyword=:keyword&id_employer=:id_employer&id_employee=:id_employee`;
+const JOB_LIST = `${API_URL_V1}/job-list?page=:page&size=:size&keyword=:keyword&id_employer=:id_employer&id_employee=:id_employee&status=:status`;
 const JOB_DETAIL = `${API_URL_V1}/job-detail?id=:id`;
 const JOB_DETAIL_ADD = `${API_URL_V1}/job-detail-add`;
+const JOB_DETAIL_UPDATE = `${API_URL_V1}/job-detail-update?id=:id`;
+const JOB_REQUEST = `${API_URL_V1}/job-request?id=:id`;
+const JOB_STATUS_UPDATE = `${API_URL_V1}/job-status-update?id=:id`;
 // const REPORT_STATUS_UPDATE = `${API_URL_V1}/report-status-update?id=:id`;
 
 const SKILL_LIST = `${API_URL_V1}/skill-list`;
@@ -147,6 +150,27 @@ export const addJobDetailApi = async (props) =>
     callApi({
         ...props,
         url: JOB_DETAIL_ADD,
+        method: "POST",
+    });
+
+export const updateJobDetailApi = async (props) =>
+    callApi({
+        ...props,
+        url: JOB_DETAIL_UPDATE,
+        method: "POST",
+    });
+
+export const requestJobApi = async (props) =>
+    callApi({
+        ...props,
+        url: JOB_REQUEST,
+        method: "POST",
+    });
+
+export const updateJobStatusApi = async (props) =>
+    callApi({
+        ...props,
+        url: JOB_STATUS_UPDATE,
         method: "POST",
     });
 

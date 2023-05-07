@@ -45,7 +45,7 @@ class DashboardJobList extends Component {
                 },
                 () => this.getJobList()
             );
-        }, 100);
+        }, 300);
     }
 
     async getJobList() {
@@ -60,6 +60,7 @@ class DashboardJobList extends Component {
                     id_employer:
                         userInfo.member_type === "admin" ? 0 : userInfo.id,
                     id_employee: 0,
+                    status: 0,
                 },
             });
             this.setState({
@@ -80,14 +81,14 @@ class DashboardJobList extends Component {
             `/dashboard/job/list?page=${page}&keyword=${this.state.keyword}`
         );
         this.setState({ page }, () => {
-            this.getReportList();
+            this.getJobList();
         });
     }
 
     async onSearch(keyword = "") {
         await Router.push(`/dashboard/job/list?page=1&keyword=${keyword}`);
         this.setState({ keyword, page: 1 }, () => {
-            this.getReportList();
+            this.getJobList();
         });
     }
 
@@ -111,7 +112,7 @@ class DashboardJobList extends Component {
                                 <Row justify="space-between" className="pt-3">
                                     <Col xs={12} lg={8}>
                                         <Input.Search
-                                            placeholder="ค้นหาหัวข้อ และชื่อผู้รายงาน"
+                                            placeholder="ค้นหาหัวข้อ"
                                             allowClear
                                             size="large"
                                             value={keyword}
@@ -124,14 +125,16 @@ class DashboardJobList extends Component {
                                         />
                                     </Col>
                                     <Col span={12} className="pb-3 text-end">
-                                        <Link href={`/dashboard/report/add`}>
+                                        <Link
+                                            href={`/dashboard/job/detail?action=add`}
+                                        >
                                             <Button
                                                 type="primary"
                                                 size="large"
                                                 icon={<PlusOutlined />}
                                                 className="bg-success"
                                             >
-                                                รายงานปัญหา
+                                                ประกาศจ้างงาน
                                             </Button>
                                         </Link>
                                     </Col>
@@ -208,7 +211,7 @@ class DashboardJobList extends Component {
                                                 }}
                                             >
                                                 <Link
-                                                    href={`/dashboard/report/detail?id=${record.id}`}
+                                                    href={`/dashboard/job/detail?id=${record.id}`}
                                                 >
                                                     <Button
                                                         type="primary"

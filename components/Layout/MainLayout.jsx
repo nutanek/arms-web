@@ -15,8 +15,8 @@ const menus = [
         key: "hiring",
     },
     {
-        label: <Link href="/pricing">ศิลปิน</Link>,
-        key: "pricing",
+        label: <Link href="/artists">ศิลปิน</Link>,
+        key: "artists",
     },
 ];
 
@@ -28,7 +28,7 @@ const MainLayout = ({ children }) => {
             </div>
             <Content
                 style={{
-                    padding: "100px 15px",
+                    padding: "120px 15px",
                     marginLeft: "auto",
                     marginRight: "auto",
                     maxWidth: 1320,

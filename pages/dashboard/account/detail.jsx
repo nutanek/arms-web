@@ -68,7 +68,6 @@ class DashboarAccountDetail extends Component {
                 params: { id },
                 body: { status },
             });
-            this.getMemberDetail(id);
             Modal.success({
                 title: "สำเร็จ",
                 content: res.message,
@@ -76,6 +75,7 @@ class DashboarAccountDetail extends Component {
                 maskClosable: true,
                 okText: "ตกลง",
                 onCancel: () => this.onBack(),
+                afterClose: () => this.getMemberDetail(id),
             });
         } catch (error) {
             Modal.error({
@@ -184,7 +184,9 @@ class DashboarAccountDetail extends Component {
                                         </Button>
                                     </Col>
                                     <Col span={18}>
-                                        {[1].includes(member.approved_status) && (
+                                        {[1].includes(
+                                            member.approved_status
+                                        ) && (
                                             <div className="text-end">
                                                 <Button
                                                     danger

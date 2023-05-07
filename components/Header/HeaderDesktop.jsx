@@ -1,12 +1,26 @@
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Row, Col, Menu } from "antd";
+import { Row, Col, Menu, Button } from "antd";
 import { assetPrefix } from "./../../next.config";
+import { getLocalUserInfo, isLoggedIn } from "../../services/appServices";
 
 const HeaderDesktop = ({ menus = [] }) => {
+    let [user, setUser] = useState({});
+    let [isUserLoggedIn, setIsUserLoggedIn] = useState({});
+
+    useEffect(() => {
+        setUser(getLocalUserInfo());
+        setIsUserLoggedIn(isLoggedIn());
+    }, []);
+
     return (
         <header className="header-lg">
-            <Row style={{ width: "100%" }} align="middle">
+            <Row
+                style={{ width: "100%" }}
+                align="middle"
+                justify="space-between"
+            >
                 <Col className="gutter-row" span={6}>
                     <div className="logo">
                         <Link href="/">
@@ -18,9 +32,9 @@ const HeaderDesktop = ({ menus = [] }) => {
                         </Link>
                     </div>
                 </Col>
-                <Col className="gutter-row" span={18}>
-                    <Row justify="end">
-                        <Col className="gutter-row" span={24}>
+                <Col className="gutter-row">
+                    <Row justify="end" align="middle">
+                        <Col className="gutter-row">
                             <div className="menu-container">
                                 {menus.map((menu) => (
                                     <div key={menu.key} className="menu-item">
@@ -45,6 +59,21 @@ const HeaderDesktop = ({ menus = [] }) => {
                                     justifyContent: "flex-end",
                                 }}
                             /> */}
+                        </Col>
+                        <Col>
+                            {isUserLoggedIn ? (
+                                <Link href={`/dashboard/member/detail?id=${user.id}`}>
+                                    <Button ghost type="default" size="large">
+                                        โปรไฟล์ของฉัน
+                                    </Button>
+                                </Link>
+                            ) : (
+                                <Link href={`/signin`}>
+                                    <Button ghost type="default" size="large">
+                                        เข้าสู่ระบบ/ลงทะเบียน
+                                    </Button>
+                                </Link>
+                            )}
                         </Col>
                     </Row>
                 </Col>

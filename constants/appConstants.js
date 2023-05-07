@@ -9,6 +9,12 @@ export const GENDERS = [
     { id: 3, key: "U", name: "ไม่ระบุ" },
 ];
 
+export const GENDERS_MAPPING = {
+    M: { id: 1, name: "ชาย" },
+    F: { id: 2, name: "หญิง" },
+    U: { id: 3, name: "ไม่ระบุ" },
+};
+
 export const ACCOUNT_APPROVE_STATUS = {
     0: { name: "ยังไม่ได้ส่งคำขอ", color: "#8c8c8c" },
     1: { name: "รออนุมัติ", color: "#faad14" },
