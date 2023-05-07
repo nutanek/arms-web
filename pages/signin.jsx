@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import Head from "next/head";
+import Link from "next/link";
 import { Row, Col, Form, Input, Button, Divider, Modal, message } from "antd";
 import { signinApi, addJobDetailApi } from "./../services/apiServices";
 import { assetPrefix } from "./../next.config";
@@ -34,7 +35,6 @@ class SigninPage extends Component {
             setLocalAccessToken(res.token);
             setLocalUserInfo(res);
             message.success("เข้าสู่ระบบสำเร็จ");
-            this.setState({ isLoading: false });
             setTimeout(() => window.location.replace(`${assetPrefix}/`), 300);
         } catch (error) {
             Modal.error({
@@ -44,7 +44,6 @@ class SigninPage extends Component {
                 maskClosable: true,
                 okText: "ตกลง",
             });
-        } finally {
             this.setState({ isLoading: false });
         }
     }
@@ -76,7 +75,7 @@ class SigninPage extends Component {
                                     />
                                 </div> */}
                                 <div className="body">
-                                    <p className="text-center fw-bold fs-3">
+                                    <p className="text-center fw-bold fs-3 mt-0">
                                         เข้าสู่ระบบ
                                     </p>
                                     <Form
@@ -134,20 +133,20 @@ class SigninPage extends Component {
                                         <Divider />
 
                                         <div className="text-secondary-color text-center">
-                                            {/* {T("DONT_HAVE_ACCOUNT")} */}
+                                            ยังไม่มีบัญชีใช่ไหม?
                                         </div>
-                                        {/* <Link to={`${ROOT_PATH}/signup`}>
+                                        <Link href="/signup">
                                             <Button type="link" block>
                                                 ลงทะเบียน
                                             </Button>
-                                        </Link> */}
+                                        </Link>
                                     </Form>
                                 </div>
                             </div>
                         </Col>
                     </Row>
                 </MainLayout>
-                
+
                 <Loading isOpen={isLoading} />
             </>
         );

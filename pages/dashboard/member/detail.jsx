@@ -27,6 +27,11 @@ import {
     updateMemberDetailApi,
     uploadImageApi,
 } from "./../../../services/apiServices";
+import {
+    getLocalUserInfo,
+    setLocalUserInfo,
+} from "./../../../services/appServices";
+getLocalUserInfo;
 import MainLayout from "./../../../components/Layout/MainLayout";
 import AccountLayout from "./../../../components/Layout/AccountLayout";
 import Loading from "./../../../components/Utility/Modal/Loading";
@@ -152,6 +157,9 @@ class DashboardMemberDetail extends Component {
                 maskClosable: true,
                 okText: "ตกลง",
                 afterClose: () => {
+                    let user = getLocalUserInfo();
+                    user.image = member.image;
+                    setLocalUserInfo(user);
                     this.getMemberDetail(member.id);
                 },
             });
@@ -487,7 +495,7 @@ class DashboardMemberDetail extends Component {
                                                 <DatePicker
                                                     size="large"
                                                     format="DD/MM/YYYY"
-                                                    placeholder="โปรดเลือกวัน"
+                                                    placeholder="โปรดเลือกวันเกิด"
                                                     style={{
                                                         width: "100%",
                                                     }}
@@ -521,13 +529,6 @@ class DashboardMemberDetail extends Component {
                                                     </div>
                                                 }
                                                 name="skills"
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message:
-                                                            "โปรดระบุ ทักษะ",
-                                                    },
-                                                ]}
                                             >
                                                 <Select
                                                     placeholder="โปรดเลือกทักษะ (ได้มากกว่า 1 ตัวเลือก)"

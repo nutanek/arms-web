@@ -29,7 +29,12 @@ const JOB_DETAIL_ADD = `${API_URL_V1}/job-detail-add`;
 const JOB_DETAIL_UPDATE = `${API_URL_V1}/job-detail-update?id=:id`;
 const JOB_REQUEST = `${API_URL_V1}/job-request?id=:id`;
 const JOB_STATUS_UPDATE = `${API_URL_V1}/job-status-update?id=:id`;
-// const REPORT_STATUS_UPDATE = `${API_URL_V1}/report-status-update?id=:id`;
+
+const FEE_LIST = `${API_URL_V1}/fee-list?page=:page&size=:size`;
+const FEE_DETAIL = `${API_URL_V1}/fee-detail?id=:id`;
+const FEE_DETAIL_ADD = `${API_URL_V1}/fee-detail-add`;
+const FEE_DETAIL_UPDATE = `${API_URL_V1}/fee-detail-update?id=:id`;
+const FEE_DETAIL_REMOVE = `${API_URL_V1}/fee-detail-remove?id=:id`;
 
 const SKILL_LIST = `${API_URL_V1}/skill-list`;
 
@@ -37,6 +42,13 @@ export const signinApi = async (props) =>
     callApi({
         ...props,
         url: SIGNIN,
+        method: "POST",
+    });
+
+export const signupApi = async (props) =>
+    callApi({
+        ...props,
+        url: SIGNUP,
         method: "POST",
     });
 
@@ -171,6 +183,41 @@ export const updateJobStatusApi = async (props) =>
     callApi({
         ...props,
         url: JOB_STATUS_UPDATE,
+        method: "POST",
+    });
+
+export const getFeeListApi = async (props) =>
+    callApi({
+        ...props,
+        url: FEE_LIST,
+        method: "GET",
+    });
+
+export const getFeeDetailApi = async (props) =>
+    callApi({
+        ...props,
+        url: FEE_DETAIL,
+        method: "GET",
+    });
+
+export const addFeeDetailApi = async (props) =>
+    callApi({
+        ...props,
+        url: FEE_DETAIL_ADD,
+        method: "POST",
+    });
+
+export const updateFeeDetailApi = async (props) =>
+    callApi({
+        ...props,
+        url: FEE_DETAIL_UPDATE,
+        method: "POST",
+    });
+
+export const removeFeeDetailApi = async (props) =>
+    callApi({
+        ...props,
+        url: FEE_DETAIL_REMOVE,
         method: "POST",
     });
 

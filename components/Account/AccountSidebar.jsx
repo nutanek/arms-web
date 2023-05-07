@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Modal, Tag } from "antd";
+import { useRouter } from "next/router";
+import { Modal, Tag, Card } from "antd";
 import {
     UserOutlined,
-    HeartOutlined,
-    BuildOutlined,
+    TeamOutlined,
+    FileProtectOutlined,
+    NotificationOutlined,
+    PayCircleOutlined,
+    PushpinOutlined,
+    AlertOutlined,
     LogoutOutlined,
 } from "@ant-design/icons";
 import {
@@ -18,15 +23,23 @@ import { MEMBER_TYPES } from "../../constants/appConstants";
 
 const { confirm } = Modal;
 
-// const PATH_ACTIVE = {
-//     userInfo: ["/account", "/account/profile", "/account/password"].map(
-//         (path) => ROOT_PATH + path
-//     ),
-//     wishlist: ["/account/wishlist"].map((path) => ROOT_PATH + path),
-//     games: ["/account/admin/games"].map((path) => ROOT_PATH + path),
-// };
+const PATH_ACTIVE = {
+    member: ["/dashboard/member/list", "/dashboard/member/detail"],
+    account: [
+        "/dashboard/account/list",
+        "/dashboard/account/detail",
+        "/dashboard/account/request",
+    ],
+    jobEmployer: ["/dashboard/job/list", "/dashboard/job/detail"],
+    jobEmployee: ["/dashboard/job/request-list"],
+    fee: ["/dashboard/fee/list", "/dashboard/fee/detail"],
+    report: ["/dashboard/report/list", "/dashboard/report/detail"],
+};
 
 const AccountSidebar = (props) => {
+    const router = useRouter();
+    const currentRoute = router.pathname;
+
     let [user, setUser] = useState({});
 
     useEffect(() => {
@@ -53,7 +66,7 @@ const AccountSidebar = (props) => {
     }
 
     return (
-        <div className="accont-sidebar">
+        <Card className="accont-sidebar">
             <div className="profile">
                 <div className="avatar-wrapper">
                     <div className="avatar">
@@ -80,27 +93,17 @@ const AccountSidebar = (props) => {
 
             <div className="menu-list-wrapper">
                 <div className="menu-list text-md ">
-                    <Link href={`/dashboard/member/detail?id=${user.id}`}>
-                        <div
-                            className={`menu-item pointer ${
-                                true ? "active" : ""
-                            }`}
-                        >
-                            <div className="icon">
-                                <UserOutlined />
-                            </div>
-                            <div className="text">แก้ไขโปรไฟล์</div>
-                        </div>
-                    </Link>
                     {["admin"].includes(user.member_type) && (
                         <Link href={`/dashboard/member/list`}>
                             <div
                                 className={`menu-item pointer ${
-                                    true ? "active" : ""
+                                    PATH_ACTIVE.member.includes(currentRoute)
+                                        ? "active"
+                                        : ""
                                 }`}
                             >
                                 <div className="icon">
-                                    <UserOutlined />
+                                    <TeamOutlined />
                                 </div>
                                 <div className="text">สมาชิก</div>
                             </div>
@@ -110,11 +113,13 @@ const AccountSidebar = (props) => {
                         <Link href={`/dashboard/account/request`}>
                             <div
                                 className={`menu-item pointer ${
-                                    true ? "active" : ""
+                                    PATH_ACTIVE.account.includes(currentRoute)
+                                        ? "active"
+                                        : ""
                                 }`}
                             >
                                 <div className="icon">
-                                    <UserOutlined />
+                                    <FileProtectOutlined />
                                 </div>
                                 <div className="text">ขออนุมัติบัญชี</div>
                             </div>
@@ -124,11 +129,13 @@ const AccountSidebar = (props) => {
                         <Link href={`/dashboard/account/list`}>
                             <div
                                 className={`menu-item pointer ${
-                                    true ? "active" : ""
+                                    PATH_ACTIVE.account.includes(currentRoute)
+                                        ? "active"
+                                        : ""
                                 }`}
                             >
                                 <div className="icon">
-                                    <UserOutlined />
+                                    <FileProtectOutlined />
                                 </div>
                                 <div className="text">การขออนุมัติบัญชี</div>
                             </div>
@@ -137,11 +144,13 @@ const AccountSidebar = (props) => {
                     <Link href={`/dashboard/job/list`}>
                         <div
                             className={`menu-item pointer ${
-                                true ? "active" : ""
+                                PATH_ACTIVE.jobEmployer.includes(currentRoute)
+                                    ? "active"
+                                    : ""
                             }`}
                         >
                             <div className="icon">
-                                <UserOutlined />
+                                <NotificationOutlined />
                             </div>
                             <div className="text">งานที่ประกาศจ้าง</div>
                         </div>
@@ -150,25 +159,46 @@ const AccountSidebar = (props) => {
                         <Link href={`/dashboard/job/request-list`}>
                             <div
                                 className={`menu-item pointer ${
-                                    true ? "active" : ""
+                                    PATH_ACTIVE.jobEmployee.includes(
+                                        currentRoute
+                                    )
+                                        ? "active"
+                                        : ""
                                 }`}
                             >
                                 <div className="icon">
-                                    <UserOutlined />
+                                    <PushpinOutlined />
                                 </div>
                                 <div className="text">งานที่รับจ้าง</div>
                             </div>
                         </Link>
                     )}
-
+                    {["admin"].includes(user.member_type) && (
+                        <Link href={`/dashboard/fee/list`}>
+                            <div
+                                className={`menu-item pointer ${
+                                    PATH_ACTIVE.fee.includes(currentRoute)
+                                        ? "active"
+                                        : ""
+                                }`}
+                            >
+                                <div className="icon">
+                                    <PayCircleOutlined />
+                                </div>
+                                <div className="text">ค่าธรรมเนียม</div>
+                            </div>
+                        </Link>
+                    )}
                     <Link href={`/dashboard/report/list`}>
                         <div
                             className={`menu-item pointer ${
-                                true ? "active" : ""
+                                PATH_ACTIVE.report.includes(currentRoute)
+                                    ? "active"
+                                    : ""
                             }`}
                         >
                             <div className="icon">
-                                <UserOutlined />
+                                <AlertOutlined />
                             </div>
                             <div className="text">รายงานปัญหา</div>
                         </div>
@@ -185,7 +215,7 @@ const AccountSidebar = (props) => {
                     </div>
                 </div>
             </div>
-        </div>
+        </Card>
     );
 };
 
