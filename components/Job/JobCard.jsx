@@ -9,7 +9,7 @@ import { IMAGE_PATH } from "./../../constants/config";
 const JobCard = ({ item = {}, onViewDetail }) => {
     return (
         <Wrapper text={item.location.province}>
-            <Link href={`/job?id=${item.id}`} target="_blank">
+            <Link href={`/job?id=${item.id}`}>
                 <Card
                     className="job-item"
                     bodyStyle={{ padding: "15px 10px", flex: 1 }}

@@ -1,5 +1,6 @@
 import qs from "qs";
 import axios from "axios";
+import { assetPrefix } from "./../next.config";
 import { API_PATH } from "./../constants/config";
 import { getLocalAccessToken } from "./../services/appServices";
 
@@ -276,6 +277,9 @@ const callApi = async ({ req, res, url, params, method, body, dataType }) => {
         return response.data;
     } catch (error) {
         // let errInfo = handleApiError(error, req, res);
+        if (error?.request?.status === 403) {
+            window.location.replace(`${assetPrefix}/signin`);
+        }
         let errInfo = error?.response?.data;
         throw errInfo;
     }

@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import Head from "next/head";
+import Router from "next/router";
 import { Row, Col, Modal } from "antd";
 import { getSkillListApi, addJobDetailApi } from "./../services/apiServices";
+import { isLoggedIn } from "./../services/appServices";
 import MainLayout from "./../components/Layout/MainLayout";
 import Loading from "./../components/Utility/Modal/Loading";
 import JobForm from "./../components/Job/JobForm";
@@ -19,6 +21,9 @@ class HiringPage extends Component {
 
     componentDidMount() {
         this.getSkills();
+        if (!isLoggedIn()) {
+            Router.push('/signin')
+        }
     }
 
     async getSkills() {

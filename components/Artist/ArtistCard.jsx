@@ -8,7 +8,7 @@ import { IMAGE_PATH } from "./../../constants/config";
 
 const ArtistCard = ({ item = {} }) => {
     return (
-        <Link href={`/member?id=${item.id}`} target="_blank">
+        <Link href={`/member?id=${item.id}`}>
             <Card
                 className="job-item"
                 bodyStyle={{ padding: "15px 10px", flex: 1 }}
