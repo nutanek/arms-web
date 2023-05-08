@@ -1,6 +1,8 @@
+import moment from "moment";
+import { assetPrefix } from "../next.config";
+
 export const KEY_ACCESS_TOKEN = "arms_access_token";
 export const KEY_USER_INFO = "arms_user_info";
-import { assetPrefix } from "../next.config";
 
 export function getLocalAccessToken() {
     const token = localStorage.getItem(KEY_ACCESS_TOKEN);
@@ -48,4 +50,20 @@ export function isLoggedIn() {
 export function getUserRole() {
     let userInfo = getLocalUserInfo();
     return userInfo.role;
+}
+
+export function getTimeFromNow(time) {
+    var duration = moment.duration(moment().diff(time));
+    var secs = duration.asSeconds();
+    if (secs <= 20) {
+        return "เมื่อสักครู่นี้";
+    } else if (secs <= 60) {
+        return `เมื่อ ${Math.floor(secs)} วินาทีก่อน`;
+    } else if (secs <= 3600) {
+        return `${Math.floor(secs / 60)} นาทีก่อน`;
+    } else if (secs <= 86400) {
+        return `${Math.floor(secs / 3600)} ชั่วโมงก่อน`;
+    } else {
+        return `${moment(time).format("DD/MM/YYYY HH:mm")}`;
+    }
 }

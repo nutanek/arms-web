@@ -28,6 +28,7 @@ import { provinces } from "./../../constants/provinces";
 import { JOB_TYPES } from "./../../constants/appConstants";
 import {
     getSkillListApi,
+    getFeeListApi,
     getJobDetailApi,
     addJobDetailApi,
     updateJobDetailApi,
@@ -35,6 +36,7 @@ import {
     uploadImageApi,
 } from "./../../services/apiServices";
 import Loading from "./../Utility/Modal/Loading";
+import numeral from "numeral";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -44,13 +46,18 @@ class JobForm extends Component {
         isLoadng: false,
         isSubmitted: false,
         skills: [],
-        job: {},
+        fees: [],
+        job: {
+            price: 0,
+            id_service_charge: 0,
+        },
     };
 
     formRef = React.createRef();
 
     componentDidMount() {
         this.getSkills();
+        this.getFees();
         if (this.props.id) {
             this.getJobDetail(this.props.id);
         }
@@ -61,6 +68,17 @@ class JobForm extends Component {
         try {
             let skills = await getSkillListApi();
             this.setState({ skills });
+        } catch (error) {
+        } finally {
+            this.setState({ isLoading: false });
+        }
+    }
+
+    async getFees() {
+        this.setState({ isLoading: true });
+        try {
+            let res = await getFeeListApi({ params: { page: 1, size: 999 } });
+            this.setState({ fees: res.data });
         } catch (error) {
         } finally {
             this.setState({ isLoading: false });
@@ -78,7 +96,7 @@ class JobForm extends Component {
                 location_address: job.location?.address,
                 location_province: job.location?.province,
                 title: job.title,
-                job_type: job.job_type,
+                service_charge_type: job.service_charge_type,
                 detail: job.detail,
                 price: job.price,
                 work_date: [
@@ -185,15 +203,19 @@ class JobForm extends Component {
         }
     }
 
-    async uploadImage(file, onSuccess) {
+    async uploadImage(file, isRealSize = false, onSuccess) {
         try {
             this.setState({ isLoading: true });
+            let body = {
+                file,
+                width: 860,
+                height: 520,
+            };
+            if (isRealSize) {
+                body.real_size = isRealSize;
+            }
             let { image } = await uploadImageApi({
-                body: {
-                    file,
-                    width: 860,
-                    height: 520,
-                },
+                body,
             });
             this.setState({
                 isLoading: false,
@@ -205,14 +227,18 @@ class JobForm extends Component {
         }
     }
 
-    onChangeImage(info) {
+    onChangeImage(info, key, isRealSize) {
         if (info.file.status !== "uploading") {
             console.log(info.fileList[0]);
-            this.uploadImage(info.fileList[0].originFileObj, (image) => {
-                let job = cloneDeep(this.state.job);
-                job.image = image;
-                this.setState({ job });
-            });
+            this.uploadImage(
+                info.fileList[0].originFileObj,
+                isRealSize,
+                (image) => {
+                    let job = cloneDeep(this.state.job);
+                    job[key] = image;
+                    this.setState({ job });
+                }
+            );
         }
         if (info.file.status === "done") {
             message.success(`${info.file.name} file uploaded successfully`);
@@ -221,15 +247,46 @@ class JobForm extends Component {
         }
     }
 
+    onChangeServiceCharge(id) {
+        let job = cloneDeep(this.state.job);
+        job.id_service_charge = id;
+        this.setState({ job });
+    }
+
+    onChangePrice(price) {
+        let job = cloneDeep(this.state.job);
+        job.price = price;
+        this.setState({ job });
+    }
+
+    calculatePyment(price = 0, serviceChargeId) {
+        let fees = cloneDeep(this.state.fees);
+        let serviceCharge = fees.find((item) => item.id == serviceChargeId);
+        let feePercentage = serviceCharge?.fee || 0;
+        let feeFixed = (price * feePercentage) / 100.0;
+        return {
+            totalPrice: price + feeFixed,
+            price,
+            feeFixed,
+            feePercentage,
+        };
+    }
+
     onSubmit(values = {}) {
         let { job } = this.state;
+
+        if (!job.payment_image) {
+            message.warning("กรุณาอัปโหลดหลักฐานการชำระเงิน");
+            return;
+        }
+
         let data = {
             id_skills: values.skills.join(","),
             location_name: values.location_name,
             location_address: values.location_address,
             location_province: values.location_province,
             title: values.title,
-            job_type: values.job_type,
+            service_charge_type: values.service_charge_type,
             detail: values.detail,
             price: values.price,
             start_date: values.work_date[0].format("YYYY-MM-DD"),
@@ -237,6 +294,7 @@ class JobForm extends Component {
             end_date: values.work_date[1].format("YYYY-MM-DD"),
             end_time: values.work_date[1].format("HH:mm:ss"),
             image: job.image,
+            payment_image: job.payment_image,
         };
         if (!job.id) {
             this.addJobDetail(data);
@@ -249,8 +307,53 @@ class JobForm extends Component {
         await Router.back();
     }
 
+    confirmRejectRequestJob(jobId) {
+        Modal.confirm({
+            title: "ท่านยืนยันที่จะปฏิเสธการขอรับงานนี้ใช่ไหม?",
+            okText: "ยืนยัน",
+            cancelText: "ยกเลิก",
+            centered: true,
+            onOk: () => this.updateJobStatus(jobId, 1),
+        });
+    }
+
+    confirmApproveRequestJob(jobId) {
+        Modal.confirm({
+            title: "ท่านยืนยันที่จะมอบหมายงานให้ศิลปินท่านนี้ใช่ไหม?",
+            okText: "ยืนยัน",
+            cancelText: "ยกเลิก",
+            centered: true,
+            onOk: () => this.updateJobStatus(jobId, 3),
+        });
+    }
+
+    confirmFinishJob(jobId) {
+        Modal.confirm({
+            title: "ท่านยืนยันที่จะจบงานนี้ใช่ไหม?",
+            okText: "ยืนยัน",
+            cancelText: "ยกเลิก",
+            centered: true,
+            onOk: () => this.updateJobStatus(jobId, 4),
+        });
+    }
+
+    confirmCancelJob(jobId) {
+        Modal.confirm({
+            title: "ท่านยืนยันที่จะยกเลิกงานนี้ใช่ไหม?",
+            content:
+                "หากท่านทำการยกเลิก ท่านจะไม่สามารถรับเงินค่าธรรมเนียมคืนได้",
+            okText: "ยืนยัน",
+            cancelText: "ยกเลิก",
+            centered: true,
+            onOk: () => this.updateJobStatus(jobId, 5),
+        });
+    }
+
     render() {
-        let { isLoading, job, skills } = this.state;
+        let { isLoading, job, skills, fees } = this.state;
+
+        let payment = this.calculatePyment(job.price, job.id_service_charge);
+
         return (
             <>
                 {!!job.id && !!job.employee?.id && (
@@ -277,10 +380,15 @@ class JobForm extends Component {
                                         />
                                     }
                                     title={
-                                        <div className="fs-6">
-                                            {job.employee?.firstname}{" "}
-                                            {job.employee?.lastname}
-                                        </div>
+                                        <Link
+                                            href={`/member?id=${job.employee?.id}`}
+                                            target="_blank"
+                                        >
+                                            <div className="fs-6 text-primary">
+                                                {job.employee?.firstname}{" "}
+                                                {job.employee?.lastname}
+                                            </div>
+                                        </Link>
                                     }
                                     description={
                                         <div className="fs-6">
@@ -303,10 +411,10 @@ class JobForm extends Component {
                                     size="large"
                                     className="ms-2"
                                     onClick={() =>
-                                        this.updateJobStatus(job.id, 1)
+                                        this.confirmRejectRequestJob(job.id)
                                     }
                                 >
-                                    ปฎิเสธ
+                                    ปฏิเสธ
                                 </Button>
                             )}
                             {[2].includes(job.job_status) && (
@@ -315,7 +423,7 @@ class JobForm extends Component {
                                     size="large"
                                     className="ms-2"
                                     onClick={() =>
-                                        this.updateJobStatus(job.id, 3)
+                                        this.confirmApproveRequestJob(job.id)
                                     }
                                 >
                                     มอบหมายงาน
@@ -327,7 +435,7 @@ class JobForm extends Component {
                                     size="large"
                                     className="ms-2 bg-success"
                                     onClick={() =>
-                                        this.updateJobStatus(job.id, 4)
+                                        this.confirmFinishJob(job.id)
                                     }
                                 >
                                     จบงาน
@@ -362,7 +470,7 @@ class JobForm extends Component {
                         <Col span={12}>
                             <Form.Item
                                 label={<div className="fs-6">ประเภทงาน</div>}
-                                name="job_type"
+                                name="id_service_charge"
                                 rules={[
                                     {
                                         required: true,
@@ -373,10 +481,14 @@ class JobForm extends Component {
                                 <Select
                                     placeholder="โปรดเลือกประเภทงาน"
                                     size="large"
+                                    onChange={this.onChangeServiceCharge.bind(
+                                        this
+                                    )}
                                 >
-                                    {JOB_TYPES.map((type) => (
-                                        <Option key={type.id} value={type.name}>
-                                            {type.name}
+                                    {fees.map((item) => (
+                                        <Option key={item.id} value={item.id}>
+                                            {item.service_charge_type}{" "}
+                                            (ค่าธรรมเนียม {item.fee}%)
                                         </Option>
                                     ))}
                                 </Select>
@@ -459,6 +571,7 @@ class JobForm extends Component {
                                     addonAfter="บาท"
                                     size="large"
                                     style={{ width: "100%" }}
+                                    onChange={this.onChangePrice.bind(this)}
                                 />
                             </Form.Item>
                         </Col>
@@ -530,7 +643,9 @@ class JobForm extends Component {
                                     beforeUpload={() => false}
                                     accept="image/png, image/jpeg, image/jpg"
                                     fileList={[]}
-                                    onChange={this.onChangeImage.bind(this)}
+                                    onChange={(e) =>
+                                        this.onChangeImage(e, "image", false)
+                                    }
                                 >
                                     <Button>อัปโหลดรูปภาพ</Button>
                                 </Upload>
@@ -544,9 +659,100 @@ class JobForm extends Component {
                                 )}
                             </Form.Item>
                         </Col>
+                        <Col span={24}>
+                            <Card
+                                type="inner"
+                                title="การชำระเงิน"
+                                headStyle={{
+                                    background: "#389e0d",
+                                    color: "#ffffff",
+                                }}
+                                style={{
+                                    borderColor: "#389e0d",
+                                }}
+                                bordered
+                            >
+                                <Row justify="space-between">
+                                    <Col lg={10}>
+                                        <div className="fs-5 fw-bold">
+                                            ยอดชำระ:{" "}
+                                            <span className="text-success">
+                                                {numeral(
+                                                    payment.totalPrice
+                                                ).format("0,0[.]00")}{" "}
+                                                บาท
+                                            </span>
+                                        </div>
+                                        <div>
+                                            ค่าจ้าง:{" "}
+                                            {numeral(payment.price).format(
+                                                "0,0[.]00"
+                                            )}{" "}
+                                            บาท
+                                        </div>
+                                        <div>
+                                            ค่าธรรมเนียม:{" "}
+                                            {numeral(payment.feeFixed).format(
+                                                "0,0[.]00"
+                                            )}{" "}
+                                            บาท ({payment.feePercentage}%)
+                                        </div>
+                                        <div className="text-danger my-4">
+                                            *หากมีการยกเลิกงานภายหลัง
+                                            จะไม่สามารถรับค่าธรรมเนียมคืนได้
+                                        </div>
+                                    </Col>
+                                    <Col xs={24} lg={10}>
+                                        <Card>
+                                            <Form.Item
+                                                label={
+                                                    <div className="fs-6 fw-bold">
+                                                        ใบเสร็จหลักฐานการชำระเงิน{" "}
+                                                        <span
+                                                            className="fw-light"
+                                                            style={{
+                                                                color: "#ff0000",
+                                                            }}
+                                                        >
+                                                            *
+                                                        </span>
+                                                    </div>
+                                                }
+                                                extra="รองรับ .jpg, .jpeg และ .png ขนาดไม่เกิน 5 MB"
+                                            >
+                                                <Upload
+                                                    beforeUpload={() => false}
+                                                    accept="image/png, image/jpeg, image/jpg"
+                                                    fileList={[]}
+                                                    onChange={(e) =>
+                                                        this.onChangeImage(
+                                                            e,
+                                                            "payment_image",
+                                                            true
+                                                        )
+                                                    }
+                                                >
+                                                    <Button>
+                                                        อัปโหลดรูปภาพ
+                                                    </Button>
+                                                </Upload>
+                                                {job.payment_image && (
+                                                    <div className="mt-3">
+                                                        <Image
+                                                            width={200}
+                                                            src={`${IMAGE_PATH}/${job.payment_image}`}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </Form.Item>
+                                        </Card>
+                                    </Col>
+                                </Row>
+                            </Card>
+                        </Col>
                     </Row>
 
-                    <Row justify="space-between" className="pt-3">
+                    <Row justify="space-between" className="pt-4">
                         <Col span={6}>
                             <Button
                                 ghost
@@ -560,10 +766,24 @@ class JobForm extends Component {
                         </Col>
                         <Col span={18}>
                             <div className="text-end">
+                                {!!job.id && (
+                                    <Button
+                                        danger
+                                        type="primary"
+                                        size="large"
+                                        className="ms-2"
+                                        onClick={() =>
+                                            this.confirmCancelJob(job.id)
+                                        }
+                                    >
+                                        ยกเลิกงาน
+                                    </Button>
+                                )}
                                 <Button
                                     htmlType="submit"
                                     type="primary"
                                     size="large"
+                                    className="ms-2"
                                 >
                                     {!!job.id ? "บันทึกข้อมูล" : "ลงประกาศ"}
                                 </Button>

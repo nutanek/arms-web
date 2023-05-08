@@ -20,7 +20,7 @@ import { PhoneOutlined, MailOutlined, SendOutlined } from "@ant-design/icons";
 import { assetPrefix } from "./../next.config";
 import { IMAGE_PATH } from "./../constants/config";
 import { getJobDetailApi, requestJobApi } from "./../services/apiServices";
-import { getLocalUserInfo } from "./../services/appServices";
+import { getLocalUserInfo, isLoggedIn } from "./../services/appServices";
 import MainLayout from "./../components/Layout/MainLayout";
 
 const title = "";
@@ -30,11 +30,13 @@ class Job extends Component {
         isLoading: false,
         job: {},
         userInfo: {},
+        isUserLoggedIn: false,
     };
 
     componentDidMount() {
         let userInfo = getLocalUserInfo();
-        this.setState({ userInfo });
+        let isUserLoggedIn = isLoggedIn();
+        this.setState({ userInfo, isUserLoggedIn });
         setTimeout(() => {
             let { id = 0 } = Router.query;
             this.getJobDetail(id);
@@ -84,8 +86,19 @@ class Job extends Component {
         }
     }
 
+    confirmRequestJob(jobId) {
+        Modal.confirm({
+            title: "ท่านยืนยันที่จะขอรับงานนี้ใช่ไหม?",
+            content: "โปรดตรวจสอบรายละเอียดให้ครบถ้วนก่อนตัดสินใจรับงาน",
+            okText: "ยืนยัน",
+            cancelText: "ยกเลิก",
+            centered: true,
+            onOk: () => this.requestJob(jobId),
+        });
+    }
+
     render() {
-        let { job, userInfo } = this.state;
+        let { job, userInfo, isUserLoggedIn } = this.state;
 
         return (
             <>
@@ -122,8 +135,15 @@ class Job extends Component {
                                         type="primary"
                                         size="large"
                                         icon={<SendOutlined />}
-                                        onClick={() => this.requestJob(job.id)}
-                                        disabled={!!job.employee?.id}
+                                        onClick={() =>
+                                            isUserLoggedIn
+                                                ? this.confirmRequestJob(job.id)
+                                                : Router.push("/signin")
+                                        }
+                                        disabled={
+                                            !!job.employee?.id ||
+                                            userInfo.id == job.member?.id
+                                        }
                                     >
                                         ขอรับงานนี้
                                     </Button>

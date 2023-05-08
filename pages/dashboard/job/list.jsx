@@ -11,9 +11,14 @@ import {
     Modal,
     Card,
     Tag,
+    Tooltip,
     message,
 } from "antd";
-import { PlusOutlined, FileSearchOutlined } from "@ant-design/icons";
+import {
+    PlusOutlined,
+    EditOutlined,
+    QuestionCircleOutlined,
+} from "@ant-design/icons";
 import moment from "moment";
 import { JOB_STATUS } from "./../../../constants/appConstants";
 import { getJobListApi } from "./../../../services/apiServices";
@@ -184,7 +189,22 @@ class DashboardJobList extends Component {
                                             `${record.member?.firstname} ${record.member?.lastname}`,
                                     },
                                     {
-                                        title: "สถานะ",
+                                        title: (
+                                            <>
+                                                สถานะ{" "}
+                                                <Tooltip
+                                                    title={`สถานะทั้งหมด: ${Object.values(
+                                                        JOB_STATUS
+                                                    )
+                                                        .map(
+                                                            (item) => item.name
+                                                        )
+                                                        .join(", ")}`}
+                                                >
+                                                    <QuestionCircleOutlined />
+                                                </Tooltip>
+                                            </>
+                                        ),
                                         dataIndex: "job_status",
                                         key: "job_status",
                                         align: "center",
@@ -215,12 +235,8 @@ class DashboardJobList extends Component {
                                                 >
                                                     <Button
                                                         type="primary"
-                                                        icon={
-                                                            <FileSearchOutlined />
-                                                        }
-                                                    >
-                                                        รายละเอียด
-                                                    </Button>
+                                                        icon={<EditOutlined />}
+                                                    ></Button>
                                                 </Link>
                                             </div>
                                         ),

@@ -37,6 +37,9 @@ const FEE_DETAIL_ADD = `${API_URL_V1}/fee-detail-add`;
 const FEE_DETAIL_UPDATE = `${API_URL_V1}/fee-detail-update?id=:id`;
 const FEE_DETAIL_REMOVE = `${API_URL_V1}/fee-detail-remove?id=:id`;
 
+const NOTIFICATION_LIST = `${API_URL_V1}/notification-list?page=:page&size=:size`;
+const NOTIFICATION_MARK_AS_READ = `${API_URL_V1}/notification-mark-as-read`;
+
 const SKILL_LIST = `${API_URL_V1}/skill-list`;
 
 export const signinApi = async (props) =>
@@ -219,6 +222,20 @@ export const removeFeeDetailApi = async (props) =>
     callApi({
         ...props,
         url: FEE_DETAIL_REMOVE,
+        method: "POST",
+    });
+
+export const getNotificationListApi = async (props) =>
+    callApi({
+        ...props,
+        url: NOTIFICATION_LIST,
+        method: "GET",
+    });
+
+export const markAsReadNotificationApi = async (props) =>
+    callApi({
+        ...props,
+        url: NOTIFICATION_MARK_AS_READ,
         method: "POST",
     });
 
