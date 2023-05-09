@@ -81,7 +81,7 @@ class JobForm extends Component {
                 fees = fees.filter(
                     (fee) => fee.service_charge_type !== "งานจ้างทดแทน"
                 );
-            this.setState({ fees: res.data });
+            this.setState({ fees });
         } catch (error) {}
     }
 
@@ -356,7 +356,7 @@ class JobForm extends Component {
     render() {
         let { isLoading, job, skills, fees } = this.state;
 
-        let payment = this.calculatePyment(job.price, job.id_service_charge);
+        let payment = this.calculatePyment(job.price, job.service_charge?.id);
 
         return (
             <>
@@ -502,6 +502,7 @@ class JobForm extends Component {
                             <Form.Item
                                 label={<div className="fs-6">ทักษะ</div>}
                                 name="skills"
+                                className="mb-0"
                                 rules={[
                                     {
                                         required: true,
@@ -513,6 +514,7 @@ class JobForm extends Component {
                                     placeholder="โปรดเลือกทักษะ (ได้มากกว่า 1 ตัวเลือก)"
                                     size="large"
                                     mode="multiple"
+                                    allowClear
                                 >
                                     {skills.map((skill) => (
                                         <Option key={skill.id} value={skill.id}>
@@ -520,12 +522,10 @@ class JobForm extends Component {
                                         </Option>
                                     ))}
                                 </Select>
-                                <SkillAddModal
-                                    onSuccess={this.onSuccessAddSkills.bind(
-                                        this
-                                    )}
-                                />
                             </Form.Item>
+                            <SkillAddModal
+                                onSuccess={this.onSuccessAddSkills.bind(this)}
+                            />
                         </Col>
                         <Col span={24}>
                             <Form.Item

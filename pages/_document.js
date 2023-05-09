@@ -1,4 +1,5 @@
 import { Html, Head, Main, NextScript } from "next/document";
+import { assetPrefix } from "../next.config";
 
 export default function Document() {
     return (
@@ -19,7 +20,7 @@ export default function Document() {
                 <link
                     rel="icon"
                     type="image/x-icon"
-                    href="/images/favicon.png"
+                    href={`${assetPrefix}/images/favicon.png`}
                 />
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link

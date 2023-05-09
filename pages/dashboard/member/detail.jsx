@@ -527,6 +527,7 @@ class DashboardMemberDetail extends Component {
                                                         ทักษะ
                                                     </div>
                                                 }
+                                                className="mb-0"
                                                 name="skills"
                                             >
                                                 <Select
@@ -544,12 +545,12 @@ class DashboardMemberDetail extends Component {
                                                         </Option>
                                                     ))}
                                                 </Select>
-                                                <SkillAddModal
-                                                    onSuccess={this.onSuccessAddSkills.bind(
-                                                        this
-                                                    )}
-                                                />
                                             </Form.Item>
+                                            <SkillAddModal
+                                                onSuccess={this.onSuccessAddSkills.bind(
+                                                    this
+                                                )}
+                                            />
                                         </Col>
                                     </Row>
 

@@ -172,7 +172,7 @@ class DashboardAccountDetail extends Component {
                                     </div> */}
 
                                     <div className="fs-6 mb-3">
-                                        <b>ประเถทสมาชิก: </b>
+                                        <b>ประเภทสมาชิก: </b>
                                         {memberType.name}
                                     </div>
 

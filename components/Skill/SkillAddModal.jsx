@@ -1,31 +1,7 @@
 import React, { Component } from "react";
-import Head from "next/head";
-import Link from "next/link";
-import Router from "next/router";
-import {
-    Row,
-    Col,
-    Drawer,
-    List,
-    Form,
-    Button,
-    Select,
-    Modal,
-    Input,
-    message,
-} from "antd";
-import {
-    PlusOutlined,
-    ClockCircleOutlined,
-    CheckCircleTwoTone,
-    ExclamationCircleTwoTone,
-    BellTwoTone,
-    WarningTwoTone,
-} from "@ant-design/icons";
-import moment from "moment";
-import { assetPrefix } from "./../../next.config";
+import { Form, Button, Select, Modal, message } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import { addSkillListApi } from "./../../services/apiServices";
-import { getTimeFromNow } from "./../../services/appServices";
 import Loading from "./../Utility/Modal/Loading";
 
 class SkillAddModal extends Component {
@@ -87,6 +63,7 @@ class SkillAddModal extends Component {
                 <Modal
                     title="เพิ่มทักษะอื่นๆ"
                     open={isOpen}
+                    onCancel={() => this.toggleModal(false)}
                     footer={false}
                     destroyOnClose
                 >
@@ -112,6 +89,7 @@ class SkillAddModal extends Component {
                                 size="large"
                                 mode="tags"
                                 tokenSeparators={[", ", ","]}
+                                dropdownStyle={{ display: "none" }}
                             >
                                 {/* {[].map((skill) => (
                                     <Option key={skill.id} value={skill.id}>
