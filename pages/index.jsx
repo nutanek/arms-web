@@ -108,7 +108,12 @@ class Home extends Component {
                         }
                     `}</style>
 
-                    <div className="hero-banner"></div>
+                    <div
+                        className="hero-banner"
+                        style={{
+                            backgroundImage: `url(${assetPrefix}/images/bg-hero.jpeg)`,
+                        }}
+                    ></div>
 
                     <div style={{ height: 300 }} className="text-center">
                         <div className="mb-2">
