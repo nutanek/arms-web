@@ -16,7 +16,7 @@ const HeaderDesktop = ({ menus = [], unreadNotiCount, onViewNotification }) => {
     }, []);
 
     return (
-        <header className="header-lg">
+        <header className="header-desktop header-lg">
             <Row
                 style={{ width: "100%" }}
                 align="middle"
@@ -43,23 +43,6 @@ const HeaderDesktop = ({ menus = [], unreadNotiCount, onViewNotification }) => {
                                     </div>
                                 ))}
                             </div>
-                            {/* <Menu
-                                selectedKeys={["home"]}
-                                mode="horizontal"
-                                items={menus.map((menu) => ({
-                                    ...menu,
-                                    label: (
-                                        <div className="menu-item">
-                                            {menu.label}
-                                        </div>
-                                    ),
-                                }))}
-                                className="menu-container"
-                                style={{
-                                    borderBottom: "none",
-                                    justifyContent: "flex-end",
-                                }}
-                            /> */}
                         </Col>
                         <Col>
                             {isUserLoggedIn ? (

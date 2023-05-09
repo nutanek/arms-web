@@ -22,6 +22,24 @@ a {
     cursor: pointer;
 }
 
+.header-mobile {
+    display: none !important;
+}
+
+@media (max-width: 767.99px) {
+    .header-desktop {
+        display: none !important;
+    }
+
+    .header-mobile {
+        display: flex !important;
+    }
+
+    .chat-float-button {
+        display: none !important;
+    }
+}
+
 .header-lg {
     position: fixed;
     width: 100%;
@@ -76,15 +94,20 @@ a {
 .header-xs {
     justify-content: space-between;
     align-items: center;
+    box-sizing: border-box;
     width: 100%;
     height: 60px;
-    background-color: #ffffff;
+    background-color: var(--main-color);
     padding: 10px;
     position: fixed;
     top: 0;
     left: 0;
     z-index: 999;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.header-xs .logo img {
+    height: 40px !important;
 }
 
 .header-xs-hidden {

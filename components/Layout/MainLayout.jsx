@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Breadcrumb, Layout, Menu, theme } from "antd";
 import { assetPrefix } from "./../../next.config";
 import HeaderDesktop from "./../Header/HeaderDesktop";
+import HeaderMobile from "./../Header/HeaderMobile";
 import NotificationDrawer from "./../Notification/NotificationDrawer";
 
 const { Header, Content, Footer } = Layout;
@@ -48,11 +49,20 @@ class MainLayout extends Component {
                             this.toggleNotificationDrawer(true)
                         }
                     />
+                    <HeaderMobile
+                        menus={menus}
+                        unreadNotiCount={unreadNotiCount}
+                        onViewNotification={() =>
+                            this.toggleNotificationDrawer(true)
+                        }
+                    />
                 </div>
                 <NotificationDrawer
                     isOpen={isOpenNotificationDrawer}
                     onClose={() => this.toggleNotificationDrawer(false)}
-                    onUpdateUnreadNotiCount={this.onUpdateUnreadNotiCount.bind(this)}
+                    onUpdateUnreadNotiCount={this.onUpdateUnreadNotiCount.bind(
+                        this
+                    )}
                 />
                 <Content
                     style={{
