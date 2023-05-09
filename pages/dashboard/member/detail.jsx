@@ -34,6 +34,7 @@ import {
 getLocalUserInfo;
 import MainLayout from "./../../../components/Layout/MainLayout";
 import AccountLayout from "./../../../components/Layout/AccountLayout";
+import SkillAddModal from "./../../../components/Skill/SkillAddModal";
 import Loading from "./../../../components/Utility/Modal/Loading";
 
 const { Option } = Select;
@@ -76,16 +77,10 @@ class DashboardMemberDetail extends Component {
     }
 
     async getSkills() {
-        this.setState({ isLoading: true });
         try {
             let skills = await getSkillListApi();
             this.setState({ skills });
-        } catch (error) {
-        } finally {
-            setTimeout(() => {
-                this.setState({ isLoading: false });
-            }, 300);
-        }
+        } catch (error) {}
     }
 
     async getMemberDetail(id) {
@@ -176,6 +171,10 @@ class DashboardMemberDetail extends Component {
                 this.setState({ isLoading: false });
             }, 300);
         }
+    }
+
+    onSuccessAddSkills(ids = []) {
+        this.getSkills();
     }
 
     onSubmit(values = {}) {
@@ -533,11 +532,8 @@ class DashboardMemberDetail extends Component {
                                                 <Select
                                                     placeholder="โปรดเลือกทักษะ (ได้มากกว่า 1 ตัวเลือก)"
                                                     size="large"
-                                                    mode="tags"
-                                                    tokenSeparators={[
-                                                        ", ",
-                                                        ",",
-                                                    ]}
+                                                    mode="multiple"
+                                                    all
                                                 >
                                                     {skills.map((skill) => (
                                                         <Option
@@ -548,6 +544,11 @@ class DashboardMemberDetail extends Component {
                                                         </Option>
                                                     ))}
                                                 </Select>
+                                                <SkillAddModal
+                                                    onSuccess={this.onSuccessAddSkills.bind(
+                                                        this
+                                                    )}
+                                                />
                                             </Form.Item>
                                         </Col>
                                     </Row>

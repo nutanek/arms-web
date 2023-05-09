@@ -7,7 +7,7 @@ import AccountLayout from "./../../../components/Layout/AccountLayout";
 import Loading from "./../../../components/Utility/Modal/Loading";
 import JobForm from "./../../../components/Job/JobForm";
 
-class DashboarJobDetail extends Component {
+class DashboardJobDetail extends Component {
     state = {
         isLoadng: false,
         isSubmitted: false,
@@ -54,4 +54,4 @@ class DashboarJobDetail extends Component {
     }
 }
 
-export default DashboarJobDetail;
+export default DashboardJobDetail;

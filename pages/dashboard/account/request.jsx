@@ -25,7 +25,7 @@ import Loading from "./../../../components/Utility/Modal/Loading";
 
 const title = "ขออนุมัติบัญชี";
 
-class DashboarAccountRequest extends Component {
+class DashboardAccountRequest extends Component {
     state = {
         isLoadng: false,
         isSubmitted: false,
@@ -268,4 +268,4 @@ class DashboarAccountRequest extends Component {
     }
 }
 
-export default DashboarAccountRequest;
+export default DashboardAccountRequest;

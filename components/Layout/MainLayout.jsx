@@ -33,7 +33,6 @@ class MainLayout extends Component {
     }
 
     onUpdateUnreadNotiCount(count) {
-        console.log('-------', count)
         this.setState({ unreadNotiCount: count });
     }
 

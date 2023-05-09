@@ -28,7 +28,7 @@ import MainLayout from "./../../../components/Layout/MainLayout";
 import AccountLayout from "./../../../components/Layout/AccountLayout";
 import Loading from "./../../../components/Utility/Modal/Loading";
 
-const title = "รายการที่รออนุมัติบัญชี";
+const title = "รายการรออนุมัติบัญชี";
 
 const pageSize = 10;
 
@@ -198,7 +198,7 @@ class DashboardAccountList extends Component {
                                         ),
                                     },
                                     {
-                                        title: "ประเภทสมาชิกที่ขอ",
+                                        title: "ประเภทสมาชิก",
                                         dataIndex: "name",
                                         key: "name",
                                         align: "center",

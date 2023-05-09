@@ -9,7 +9,7 @@ import Loading from "./../../../components/Utility/Modal/Loading";
 
 const title = "รายงานปัญหา";
 
-class DashboarReportAdd extends Component {
+class DashboardReportAdd extends Component {
     state = {
         isLoadng: false,
         isSubmitted: false,
@@ -111,7 +111,7 @@ class DashboarReportAdd extends Component {
                                                         รายละเอียด
                                                     </div>
                                                 }
-                                                name="location_address"
+                                                name="detail"
                                                 rules={[
                                                     {
                                                         required: true,
@@ -167,4 +167,4 @@ class DashboarReportAdd extends Component {
     }
 }
 
-export default DashboarReportAdd;
+export default DashboardReportAdd;

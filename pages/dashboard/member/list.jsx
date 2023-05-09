@@ -59,9 +59,9 @@ class DashboardMemberList extends Component {
                     page: this.state.page,
                     size: pageSize,
                     keyword: this.state.keyword,
-                    request_account: 'no',
+                    request_account: "no",
                     approved_status: 0,
-                    member_type: 'all',
+                    member_type: "all",
                 },
             });
             this.setState({
@@ -241,7 +241,9 @@ class DashboardMemberList extends Component {
                                                     <Button
                                                         type="primary"
                                                         icon={<EditOutlined />}
-                                                    ></Button>
+                                                    >
+                                                        แก้ไข
+                                                    </Button>
                                                 </Link>
 
                                                 <Popconfirm
@@ -265,7 +267,9 @@ class DashboardMemberList extends Component {
                                                         icon={
                                                             <DeleteOutlined />
                                                         }
-                                                    ></Button>
+                                                    >
+                                                        ลบ
+                                                    </Button>
                                                 </Popconfirm>
                                             </div>
                                         ),

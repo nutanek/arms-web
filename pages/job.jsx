@@ -16,7 +16,13 @@ import {
     Button,
     Modal,
 } from "antd";
-import { PhoneOutlined, MailOutlined, SendOutlined } from "@ant-design/icons";
+import {
+    PhoneOutlined,
+    MailOutlined,
+    SendOutlined,
+    EnvironmentOutlined,
+    ClockCircleOutlined,
+} from "@ant-design/icons";
 import { assetPrefix } from "./../next.config";
 import { IMAGE_PATH } from "./../constants/config";
 import { getJobDetailApi, requestJobApi } from "./../services/apiServices";
@@ -186,7 +192,9 @@ class Job extends Component {
                                 <Col span={12}>
                                     <Card type="inner" className="mb-3">
                                         <div className="fs-6 text-center">
-                                            <b>สถานที่</b>
+                                            <b>
+                                                <EnvironmentOutlined /> สถานที่
+                                            </b>
                                             <br />
                                             {job.location?.name}
                                             <br />
@@ -201,17 +209,23 @@ class Job extends Component {
                                 <Col span={12}>
                                     <Card type="inner" className="mb-3">
                                         <div className="fs-6 text-center">
-                                            <b>เวลา</b>
+                                            <b>
+                                                <ClockCircleOutlined /> เวลา
+                                            </b>
                                             <br />
-                                            {moment(
-                                                `${job.start_date} ${job.start_time}`
-                                            ).format("DD/MM/YYYY HH:mm น.")}
+                                            <span className="text-primary">
+                                                {moment(
+                                                    `${job.start_date} ${job.start_time}`
+                                                ).format("DD/MM/YYYY HH:mm น.")}
+                                            </span>
                                             <br />
                                             ถึง
                                             <br />
-                                            {moment(
-                                                `${job.end_date} ${job.end_time}`
-                                            ).format("DD/MM/YYYY HH:mm น.")}
+                                            <span className="text-primary">
+                                                {moment(
+                                                    `${job.end_date} ${job.end_time}`
+                                                ).format("DD/MM/YYYY HH:mm น.")}
+                                            </span>
                                         </div>
                                     </Card>
                                 </Col>

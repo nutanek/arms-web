@@ -180,7 +180,7 @@ class DashboardJobList extends Component {
                                         ),
                                     },
                                     {
-                                        title: "ผู้ประกาศ",
+                                        title: "ผู้ลงประกาศ",
                                         dataIndex: "name",
                                         key: "name",
                                         align: "center",
@@ -236,7 +236,9 @@ class DashboardJobList extends Component {
                                                     <Button
                                                         type="primary"
                                                         icon={<EditOutlined />}
-                                                    ></Button>
+                                                    >
+                                                        แก้ไข
+                                                    </Button>
                                                 </Link>
                                             </div>
                                         ),

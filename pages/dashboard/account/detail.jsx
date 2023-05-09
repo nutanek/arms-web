@@ -29,7 +29,7 @@ import Loading from "./../../../components/Utility/Modal/Loading";
 
 const title = "รายละเอียดคำขออนุมัติ";
 
-class DashboarAccountDetail extends Component {
+class DashboardAccountDetail extends Component {
     state = {
         isLoadng: false,
         isSubmitted: false,
@@ -105,6 +105,26 @@ class DashboarAccountDetail extends Component {
         await Router.back();
     }
 
+    confirmRejectRequestJob(memberId) {
+        Modal.confirm({
+            title: "ท่านยืนยันที่จะปฏิเสธบัญชีนี้ใช่ไหม?",
+            okText: "ยืนยัน",
+            cancelText: "ยกเลิก",
+            centered: true,
+            onOk: () => this.updateMemberAccountStatus(memberId, 1),
+        });
+    }
+
+    confirmApproveRequestJob(memberId) {
+        Modal.confirm({
+            title: "ท่านยืนยันที่จะอนุมัติบัญชีนี้ใช่ไหม?",
+            okText: "ยืนยัน",
+            cancelText: "ยกเลิก",
+            centered: true,
+            onOk: () => this.updateMemberAccountStatus(memberId, 2),
+        });
+    }
+
     render() {
         let { isLoading, member } = this.state;
 
@@ -152,7 +172,7 @@ class DashboarAccountDetail extends Component {
                                     </div> */}
 
                                     <div className="fs-6 mb-3">
-                                        <b>ประเถทสมาชิกที่ขอ: </b>
+                                        <b>ประเถทสมาชิก: </b>
                                         {memberType.name}
                                     </div>
 
@@ -194,22 +214,20 @@ class DashboarAccountDetail extends Component {
                                                     size="large"
                                                     className="ms-2"
                                                     onClick={() =>
-                                                        this.updateMemberAccountStatus(
-                                                            member.id,
-                                                            3
+                                                        this.confirmRejectRequestJob(
+                                                            member.id
                                                         )
                                                     }
                                                 >
-                                                    ไม่อนุมัติ
+                                                    ปฏิเสธ
                                                 </Button>
                                                 <Button
                                                     type="primary"
                                                     size="large"
                                                     className="ms-2 bg-success"
                                                     onClick={() =>
-                                                        this.updateMemberAccountStatus(
-                                                            member.id,
-                                                            2
+                                                        this.confirmApproveRequestJob(
+                                                            member.id
                                                         )
                                                     }
                                                 >
@@ -230,4 +248,4 @@ class DashboarAccountDetail extends Component {
     }
 }
 
-export default DashboarAccountDetail;
+export default DashboardAccountDetail;

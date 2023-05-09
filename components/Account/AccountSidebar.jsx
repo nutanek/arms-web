@@ -3,9 +3,9 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { Modal, Tag, Card } from "antd";
 import {
-    UserOutlined,
     TeamOutlined,
     FileProtectOutlined,
+    RedEnvelopeOutlined,
     NotificationOutlined,
     PayCircleOutlined,
     PushpinOutlined,
@@ -30,6 +30,7 @@ const PATH_ACTIVE = {
         "/dashboard/account/detail",
         "/dashboard/account/request",
     ],
+    payment: ["/dashboard/payment/list", "/dashboard/payment/detail"],
     jobEmployer: ["/dashboard/job/list", "/dashboard/job/detail"],
     jobEmployee: ["/dashboard/job/request-list"],
     fee: ["/dashboard/fee/list", "/dashboard/fee/detail"],
@@ -84,7 +85,7 @@ const AccountSidebar = (props) => {
                     {user.display_name}
                 </div>
                 <div className="text-center">
-                    <Tag color="#108ee9">
+                    ประเภท: <Tag color="#108ee9">
                         {MEMBER_TYPES[user.member_type]?.name ||
                             "ไม่ยืนยันตัวตน"}
                     </Tag>
@@ -137,7 +138,25 @@ const AccountSidebar = (props) => {
                                 <div className="icon">
                                     <FileProtectOutlined />
                                 </div>
-                                <div className="text">การขออนุมัติบัญชี</div>
+                                <div className="text">อนุมัติบัญชี</div>
+                            </div>
+                        </Link>
+                    )}
+                    {["admin"].includes(user.member_type) && (
+                        <Link href={`/dashboard/payment/list`}>
+                            <div
+                                className={`menu-item pointer ${
+                                    PATH_ACTIVE.payment.includes(currentRoute)
+                                        ? "active"
+                                        : ""
+                                }`}
+                            >
+                                <div className="icon">
+                                    <RedEnvelopeOutlined />
+                                </div>
+                                <div className="text">
+                                    อนุมัติการชำระเงิน
+                                </div>
                             </div>
                         </Link>
                     )}
@@ -155,6 +174,7 @@ const AccountSidebar = (props) => {
                             <div className="text">งานที่ประกาศจ้าง</div>
                         </div>
                     </Link>
+
                     {["employee"].includes(user.member_type) && (
                         <Link href={`/dashboard/job/request-list`}>
                             <div

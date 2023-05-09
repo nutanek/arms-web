@@ -8,12 +8,16 @@ import {
     Input,
     Table,
     Button,
-    Modal,
+    Tooltip,
     Card,
     Tag,
     message,
 } from "antd";
-import { PlusOutlined, FileSearchOutlined } from "@ant-design/icons";
+import {
+    PlusOutlined,
+    FileSearchOutlined,
+    QuestionCircleOutlined,
+} from "@ant-design/icons";
 import moment from "moment";
 import { REPORT_STATUS } from "./../../../constants/appConstants";
 import { getReportListApi } from "./../../../services/apiServices";
@@ -181,7 +185,22 @@ class DashboardReportList extends Component {
                                             `${record.member?.firstname} ${record.member?.lastname}`,
                                     },
                                     {
-                                        title: "สถานะ",
+                                        title: (
+                                            <>
+                                                สถานะ{" "}
+                                                <Tooltip
+                                                    title={`สถานะทั้งหมด: ${Object.values(
+                                                        REPORT_STATUS
+                                                    )
+                                                        .map(
+                                                            (item) => item.name
+                                                        )
+                                                        .join(", ")}`}
+                                                >
+                                                    <QuestionCircleOutlined />
+                                                </Tooltip>
+                                            </>
+                                        ),
                                         dataIndex: "report_status",
                                         key: "report_status",
                                         align: "center",

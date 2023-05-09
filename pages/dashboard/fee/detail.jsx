@@ -249,7 +249,7 @@ class DashboardFeeDetail extends Component {
                                             <Form.Item
                                                 label={
                                                     <div className="fs-6">
-                                                        ประภท
+                                                        ประเภทงาน
                                                     </div>
                                                 }
                                                 name="service_charge_type"
@@ -257,7 +257,7 @@ class DashboardFeeDetail extends Component {
                                                     {
                                                         required: true,
                                                         message:
-                                                            "โปรดระบุ ประภท",
+                                                            "โปรดระบุ ประเภทงาน",
                                                     },
                                                 ]}
                                             >
@@ -284,6 +284,7 @@ class DashboardFeeDetail extends Component {
                                                     min={0}
                                                     size="large"
                                                     style={{ width: "100%" }}
+                                                    addonAfter="%"
                                                 />
                                             </Form.Item>
                                         </Col>

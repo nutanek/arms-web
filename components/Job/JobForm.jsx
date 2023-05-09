@@ -22,6 +22,7 @@ import {
 import { PhoneOutlined, MailOutlined } from "@ant-design/icons";
 import cloneDeep from "lodash/cloneDeep";
 import dayjs from "dayjs";
+import numeral from "numeral";
 import { assetPrefix } from "./../../next.config";
 import { IMAGE_PATH } from "./../../constants/config";
 import { provinces } from "./../../constants/provinces";
@@ -35,8 +36,9 @@ import {
     updateJobStatusApi,
     uploadImageApi,
 } from "./../../services/apiServices";
+import { getLocalUserInfo } from "../../services/appServices";
 import Loading from "./../Utility/Modal/Loading";
-import numeral from "numeral";
+import SkillAddModal from "./../Skill/SkillAddModal";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -64,25 +66,23 @@ class JobForm extends Component {
     }
 
     async getSkills() {
-        this.setState({ isLoading: true });
         try {
             let skills = await getSkillListApi();
             this.setState({ skills });
-        } catch (error) {
-        } finally {
-            this.setState({ isLoading: false });
-        }
+        } catch (error) {}
     }
 
     async getFees() {
-        this.setState({ isLoading: true });
         try {
+            let userInfo = getLocalUserInfo();
             let res = await getFeeListApi({ params: { page: 1, size: 999 } });
+            let fees = res.data || [];
+            if (userInfo.member_type == "employer")
+                fees = fees.filter(
+                    (fee) => fee.service_charge_type !== "งานจ้างทดแทน"
+                );
             this.setState({ fees: res.data });
-        } catch (error) {
-        } finally {
-            this.setState({ isLoading: false });
-        }
+        } catch (error) {}
     }
 
     async getJobDetail(id) {
@@ -96,7 +96,7 @@ class JobForm extends Component {
                 location_address: job.location?.address,
                 location_province: job.location?.province,
                 title: job.title,
-                service_charge_type: job.service_charge_type,
+                id_service_charge: job.service_charge?.id,
                 detail: job.detail,
                 price: job.price,
                 work_date: [
@@ -286,7 +286,7 @@ class JobForm extends Component {
             location_address: values.location_address,
             location_province: values.location_province,
             title: values.title,
-            service_charge_type: values.service_charge_type,
+            id_service_charge: values.id_service_charge,
             detail: values.detail,
             price: values.price,
             start_date: values.work_date[0].format("YYYY-MM-DD"),
@@ -305,6 +305,10 @@ class JobForm extends Component {
 
     async onBack() {
         await Router.back();
+    }
+
+    onSuccessAddSkills(ids = []) {
+        this.getSkills();
     }
 
     confirmRejectRequestJob(jobId) {
@@ -508,8 +512,7 @@ class JobForm extends Component {
                                 <Select
                                     placeholder="โปรดเลือกทักษะ (ได้มากกว่า 1 ตัวเลือก)"
                                     size="large"
-                                    mode="tags"
-                                    tokenSeparators={[", ", ","]}
+                                    mode="multiple"
                                 >
                                     {skills.map((skill) => (
                                         <Option key={skill.id} value={skill.id}>
@@ -517,6 +520,11 @@ class JobForm extends Component {
                                         </Option>
                                     ))}
                                 </Select>
+                                <SkillAddModal
+                                    onSuccess={this.onSuccessAddSkills.bind(
+                                        this
+                                    )}
+                                />
                             </Form.Item>
                         </Col>
                         <Col span={24}>
@@ -637,7 +645,6 @@ class JobForm extends Component {
                                     </div>
                                 }
                                 extra="รองรับ .jpg, .jpeg และ .png ขนาดไม่เกิน 5 MB"
-                                name="detail"
                             >
                                 <Upload
                                     beforeUpload={() => false}
@@ -707,7 +714,7 @@ class JobForm extends Component {
                                             <Form.Item
                                                 label={
                                                     <div className="fs-6 fw-bold">
-                                                        ใบเสร็จหลักฐานการชำระเงิน{" "}
+                                                        ใบเสร็จ/หลักฐานการชำระเงิน{" "}
                                                         <span
                                                             className="fw-light"
                                                             style={{
@@ -739,7 +746,7 @@ class JobForm extends Component {
                                                 {job.payment_image && (
                                                     <div className="mt-3">
                                                         <Image
-                                                            width={200}
+                                                            width={"100%"}
                                                             src={`${IMAGE_PATH}/${job.payment_image}`}
                                                         />
                                                     </div>

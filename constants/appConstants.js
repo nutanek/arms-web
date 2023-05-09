@@ -37,8 +37,9 @@ export const MEMBER_TYPES = {
 };
 
 export const JOB_STATUS = {
-    0: { name: "รออนุมัติการชำระเงิน", color: "#faad14" },
-    1: { name: "เปิดรับสมัคร", color: "#fa8c16" },
+    6: { name: "รออนุมัติ", color: "#faad14" },
+    7: { name: "ไม่อนุมัติ", color: "#8c8c8c" },
+    1: { name: "เปิดรับสมัคร", color: "#d46b08" },
     2: { name: "ขอรับงาน", color: "#9254de" },
     3: { name: "มอบหมายงานแล้ว", color: "#1677ff" },
     4: { name: "สำเร็จ", color: "#389e0d" },

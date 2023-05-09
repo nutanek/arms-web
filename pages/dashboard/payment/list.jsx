@@ -8,28 +8,28 @@ import {
     Input,
     Table,
     Button,
+    Popconfirm,
     Modal,
     Card,
     Tag,
     message,
 } from "antd";
-import { PlusOutlined, FileSearchOutlined } from "@ant-design/icons";
+import { FileSearchOutlined } from "@ant-design/icons";
 import moment from "moment";
-import { JOB_STATUS } from "./../../../constants/appConstants";
-import { getJobListApi } from "./../../../services/apiServices";
-import { getLocalUserInfo } from "./../../../services/appServices";
+import numeral from "numeral";
+import { getPaymentListApi } from "./../../../services/apiServices";
 import MainLayout from "./../../../components/Layout/MainLayout";
 import AccountLayout from "./../../../components/Layout/AccountLayout";
 import Loading from "./../../../components/Utility/Modal/Loading";
 
-const title = "งานที่รับจ้าง";
+const title = "รายการรออนุมัติการชำระเงิน";
 
 const pageSize = 10;
 
-class DashboardJobRequestList extends Component {
+class DashboardPaymentList extends Component {
     state = {
         isLoading: false,
-        jobs: [],
+        payments: [],
         page: 1,
         totalPage: 5,
         keyword: "",
@@ -37,34 +37,27 @@ class DashboardJobRequestList extends Component {
 
     componentDidMount() {
         setTimeout(() => {
-            let { page = 1, keyword = "" } = Router.query;
+            let { page = 1 } = Router.query;
             this.setState(
                 {
                     page,
-                    keyword,
                 },
-                () => this.getJobList()
+                () => this.getPaymentList()
             );
         }, 300);
     }
 
-    async getJobList() {
-        let userInfo = getLocalUserInfo();
+    async getPaymentList() {
         this.setState({ isLoading: true });
         try {
-            let res = await getJobListApi({
+            let res = await getPaymentListApi({
                 params: {
                     page: this.state.page,
                     size: pageSize,
-                    keyword: this.state.keyword,
-                    id_employer: 0,
-                    id_employee:
-                        userInfo.member_type === "admin" ? 0 : userInfo.id,
-                    status: 0,
                 },
             });
             this.setState({
-                jobs: res.data,
+                payments: res.data,
                 page: res.page,
                 totalPage: res.total_page,
             });
@@ -77,27 +70,15 @@ class DashboardJobRequestList extends Component {
     }
 
     async onChangePage(page) {
-        await Router.push(
-            `/dashboard/job/list?page=${page}&keyword=${this.state.keyword}`
-        );
+        await Router.push(`/dashboard/payment/list?page=${page}`);
         this.setState({ page }, () => {
-            this.getJobList();
+            this.getMemberList();
         });
-    }
-
-    async onSearch(keyword = "") {
-        await Router.push(`/dashboard/job/list?page=1&keyword=${keyword}`);
-        this.setState({ keyword, page: 1 }, () => {
-            this.getJobList();
-        });
-    }
-
-    onChangeKeyword(keyword) {
-        this.setState({ keyword });
     }
 
     render() {
-        let { isLoading, jobs, page, totalPage, keyword } = this.state;
+        let { isLoading, payments, page, totalPage } = this.state;
+
         return (
             <>
                 <Head>
@@ -106,29 +87,9 @@ class DashboardJobRequestList extends Component {
                 </Head>
                 <MainLayout>
                     <AccountLayout title={title}>
-                        <Card
-                            type="inner"
-                            title={
-                                <Row justify="space-between" className="pt-3">
-                                    <Col xs={12} lg={8}>
-                                        <Input.Search
-                                            placeholder="ค้นหาหัวข้อ"
-                                            allowClear
-                                            size="large"
-                                            value={keyword}
-                                            onChange={(e) =>
-                                                this.onChangeKeyword(
-                                                    e.target.value
-                                                )
-                                            }
-                                            onSearch={this.onSearch.bind(this)}
-                                        />
-                                    </Col>
-                                </Row>
-                            }
-                        >
+                        <Card type="inner">
                             <Table
-                                dataSource={jobs}
+                                dataSource={payments}
                                 pagination={{
                                     current: page,
                                     pageSize: pageSize,
@@ -147,20 +108,6 @@ class DashboardJobRequestList extends Component {
                                         className: " fs-6",
                                     },
                                     {
-                                        title: "วันที่ทำงาน",
-                                        dataIndex: "work_date",
-                                        key: "work_date",
-                                        align: "center",
-                                        className: "fs-6",
-                                        render: (value, record) => (
-                                            <span>
-                                                {moment(
-                                                    `${record.start_date} ${record.start_time}`
-                                                ).format("DD/MM/YYYY HH:mm")}
-                                            </span>
-                                        ),
-                                    },
-                                    {
                                         title: "ผู้ลงประกาศ",
                                         dataIndex: "name",
                                         key: "name",
@@ -170,20 +117,27 @@ class DashboardJobRequestList extends Component {
                                             `${record.member?.firstname} ${record.member?.lastname}`,
                                     },
                                     {
-                                        title: "สถานะ",
-                                        dataIndex: "job_status",
-                                        key: "job_status",
+                                        title: "วันที่ขออนุมัติ",
+                                        dataIndex: "create_datetime",
+                                        key: "create_datetime",
                                         align: "center",
                                         className: "fs-6",
-                                        render: (value) => {
-                                            let status =
-                                                JOB_STATUS[value] || {};
-                                            return (
-                                                <Tag color={status.color}>
-                                                    {status.name}
-                                                </Tag>
-                                            );
-                                        },
+                                        render: (value) => (
+                                            <span>
+                                                {moment(value).format(
+                                                    "DD/MM/YYYY HH:mm"
+                                                )}
+                                            </span>
+                                        ),
+                                    },
+                                    {
+                                        title: "ยอดชำระ (บาท)",
+                                        dataIndex: "total_amount",
+                                        key: "total_amount",
+                                        align: "right",
+                                        className: "fs-6",
+                                        render: (value, record) =>
+                                            numeral(value).format("0,0.00"),
                                     },
                                     {
                                         title: "",
@@ -197,8 +151,7 @@ class DashboardJobRequestList extends Component {
                                                 }}
                                             >
                                                 <Link
-                                                    href={`/job?id=${record.id}`}
-                                                    target="_blank"
+                                                    href={`/dashboard/payment/detail?id=${record.id}`}
                                                 >
                                                     <Button
                                                         type="primary"
@@ -224,4 +177,4 @@ class DashboardJobRequestList extends Component {
     }
 }
 
-export default DashboardJobRequestList;
+export default DashboardPaymentList;

@@ -5,6 +5,8 @@ import NProgress from "nprogress";
 import { ConfigProvider } from "antd";
 import "../styles/utilities.css";
 import "../styles/main.css";
+import { getUserProfileListApi } from "./../services/apiServices";
+import { isLoggedIn, setLocalUserInfo } from "./../services/appServices";
 
 export default function App({ Component, pageProps }) {
     useEffect(() => {
@@ -32,6 +34,19 @@ export default function App({ Component, pageProps }) {
             Router.events.off("routeChangeError", handleRouteDone);
         };
     }, []);
+
+    useEffect(() => {
+        if (isLoggedIn()) {
+            getUserProfileList();
+        }
+    });
+
+    const getUserProfileList = async () => {
+        try {
+            let user = await getUserProfileListApi();
+            setLocalUserInfo(user);
+        } catch (error) {}
+    };
 
     return (
         <ConfigProvider

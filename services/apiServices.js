@@ -2,7 +2,7 @@ import qs from "qs";
 import axios from "axios";
 import { assetPrefix } from "./../next.config";
 import { API_PATH } from "./../constants/config";
-import { getLocalAccessToken } from "./../services/appServices";
+import { getLocalAccessToken, signout } from "./../services/appServices";
 
 const API_URL_V1 = `${API_PATH}/v1`;
 
@@ -10,6 +10,8 @@ const API_URL_V1 = `${API_PATH}/v1`;
 const SIGNIN = `${API_URL_V1}/signin`;
 const SIGNUP = `${API_URL_V1}/signup`;
 const UPLOAD_IMAGE = `${API_URL_V1}/upload`;
+
+const USER_PROFILE = `${API_URL_V1}/user-profile`;
 
 const MEMBER_LIST = `${API_URL_V1}/member-list?page=:page&size=:size&keyword=:keyword&request_account=:request_account&approved_status=:approved_status&member_type=:member_type`;
 const MEMBER_DETAIL = `${API_URL_V1}/member-detail?id=:id`;
@@ -40,7 +42,10 @@ const FEE_DETAIL_REMOVE = `${API_URL_V1}/fee-detail-remove?id=:id`;
 const NOTIFICATION_LIST = `${API_URL_V1}/notification-list?page=:page&size=:size`;
 const NOTIFICATION_MARK_AS_READ = `${API_URL_V1}/notification-mark-as-read`;
 
+const PAYMENT_LIST = `${API_URL_V1}/payment-list?page=:page&size=:size`;
+
 const SKILL_LIST = `${API_URL_V1}/skill-list`;
+const SKILL_ADD = `${API_URL_V1}/skill-add`;
 
 export const signinApi = async (props) =>
     callApi({
@@ -62,6 +67,13 @@ export const uploadImageApi = async (props) =>
         url: UPLOAD_IMAGE,
         method: "POST",
         dataType: "MULTIPART",
+    });
+
+export const getUserProfileListApi = async (props) =>
+    callApi({
+        ...props,
+        url: USER_PROFILE,
+        method: "GET",
     });
 
 export const getMemberListApi = async (props) =>
@@ -146,6 +158,13 @@ export const getSkillListApi = async (props) =>
         ...props,
         url: SKILL_LIST,
         method: "GET",
+    });
+
+export const addSkillListApi = async (props) =>
+    callApi({
+        ...props,
+        url: SKILL_ADD,
+        method: "POST",
     });
 
 export const getJobListApi = async (props) =>
@@ -239,6 +258,13 @@ export const markAsReadNotificationApi = async (props) =>
         method: "POST",
     });
 
+export const getPaymentListApi = async (props) =>
+    callApi({
+        ...props,
+        url: PAYMENT_LIST,
+        method: "GET",
+    });
+
 const generateApiUrl = (url, params) => {
     let apiUrl = url;
     for (var key in params) {
@@ -295,7 +321,7 @@ const callApi = async ({ req, res, url, params, method, body, dataType }) => {
     } catch (error) {
         // let errInfo = handleApiError(error, req, res);
         if (error?.request?.status === 403) {
-            window.location.replace(`${assetPrefix}/signin`);
+            signout();
         }
         let errInfo = error?.response?.data;
         throw errInfo;

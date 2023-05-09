@@ -180,21 +180,21 @@ class DashboardFeeList extends Component {
                                 }}
                                 columns={[
                                     {
-                                        title: "ประเภท",
+                                        title: "ประเภทงาน",
                                         dataIndex: "service_charge_type",
                                         key: "service_charge_type",
                                         className: "fs-6",
                                     },
                                     {
-                                        title: "ค่าธรรมเนียม",
+                                        title: "ค่าธรรมเนียม (%)",
                                         dataIndex: "fee",
                                         key: "fee",
                                         className: "fs-6",
                                         align: "center",
                                         render: (value, record) =>
                                             `${numeral(value).format(
-                                                "0,0"
-                                            )} บาท`,
+                                                "0,0[.]00"
+                                            )}`,
                                     },
 
                                     {
@@ -214,12 +214,14 @@ class DashboardFeeList extends Component {
                                                     <Button
                                                         type="primary"
                                                         icon={<EditOutlined />}
-                                                    ></Button>
+                                                    >
+                                                        แก้ไข
+                                                    </Button>
                                                 </Link>
 
                                                 <Popconfirm
                                                     title={
-                                                        "คุณต้องการลบสมาชิกรายนี้ใช่ไหม?"
+                                                        "คุณต้องการลบค่าธรรมเนียมนี้ใช่ไหม?"
                                                     }
                                                     onConfirm={() =>
                                                         this.removeFeeList(
@@ -238,7 +240,9 @@ class DashboardFeeList extends Component {
                                                         icon={
                                                             <DeleteOutlined />
                                                         }
-                                                    ></Button>
+                                                    >
+                                                        ลบ
+                                                    </Button>
                                                 </Popconfirm>
                                             </div>
                                         ),

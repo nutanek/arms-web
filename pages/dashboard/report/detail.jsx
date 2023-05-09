@@ -1,7 +1,17 @@
 import React, { Component } from "react";
 import Head from "next/head";
 import Router from "next/router";
-import { Row, Col, Button, Modal, Popconfirm, Tag, Card, message } from "antd";
+import {
+    Row,
+    Col,
+    Button,
+    Modal,
+    Popconfirm,
+    Tag,
+    Card,
+    message,
+    Input,
+} from "antd";
 import { ClockCircleOutlined } from "@ant-design/icons";
 import moment from "moment";
 import { REPORT_STATUS } from "./../../../constants/appConstants";
@@ -16,10 +26,13 @@ import Loading from "./../../../components/Utility/Modal/Loading";
 
 const title = "รายงานปัญหา";
 
-class DashboarReportDetail extends Component {
+class DashboardReportDetail extends Component {
     state = {
         isLoadng: false,
         isSubmitted: false,
+        isOpenCommentModal: false,
+        selectedStatus: 0,
+        comment: "",
         report: {},
         userInfo: {},
     };
@@ -48,7 +61,8 @@ class DashboarReportDetail extends Component {
         }
     }
 
-    async updateReportStatus(id, status) {
+    async updateReportStatus(id) {
+        let { comment, selectedStatus: status } = this.state;
         if (!status) {
             return;
         }
@@ -56,16 +70,18 @@ class DashboarReportDetail extends Component {
         try {
             let res = await updateReportStatusApi({
                 params: { id },
-                body: { status },
+                body: { status, response_message: comment },
             });
-            this.getReportDetail(id);
+            this.toggleCommentModal(false);
             Modal.success({
                 title: "สำเร็จ",
                 content: res.message,
                 centered: true,
                 maskClosable: true,
                 okText: "ตกลง",
-                onCancel: () => this.onBack(),
+                onOk: () => {
+                    this.getReportDetail(id);
+                },
             });
         } catch (error) {
             Modal.error({
@@ -95,8 +111,58 @@ class DashboarReportDetail extends Component {
         await Router.back();
     }
 
+    onChangeComment(comment = "") {
+        this.setState({ comment });
+    }
+
+    toggleCommentModal(status) {
+        this.setState({ isOpenCommentModal: status });
+    }
+
+    confirmRejectRequestJob() {
+        this.toggleCommentModal(true);
+        this.setState({ selectedStatus: 4 });
+        // Modal.confirm({
+        //     title: "ท่านยืนยันที่จะยกเลิกการรายงานนี้ใช่ไหม?",
+        //     okText: "ยืนยัน",
+        //     cancelText: "ยกเลิก",
+        //     centered: true,
+        //     onOk: () => this.updateReportStatus(reportId, 4),
+        // });
+    }
+
+    confirmApproveRequestJob() {
+        this.toggleCommentModal(true);
+        this.setState({ selectedStatus: 2 });
+        // Modal.confirm({
+        //     title: "ท่านยืนยันที่จะดำเนินการแก้ปัญหานี้ใช่ไหม?",
+        //     okText: "ยืนยัน",
+        //     cancelText: "ยกเลิก",
+        //     centered: true,
+        //     onOk: () => this.updateReportStatus(reportId, 2),
+        // });
+    }
+
+    confirmAFinishRequestJob() {
+        this.toggleCommentModal(true);
+        this.setState({ selectedStatus: 3 });
+        // Modal.confirm({
+        //     title: "ท่านยืนยันที่จะเสร็จสิ้นการแก้ปัญหานี้ใช่ไหม?",
+        //     okText: "ยืนยัน",
+        //     cancelText: "ยกเลิก",
+        //     centered: true,
+        //     onOk: () => this.updateReportStatus(reportId, 3),
+        // });
+    }
+
     render() {
-        let { isLoading, report, userInfo } = this.state;
+        let {
+            isLoading,
+            report,
+            isOpenCommentModal,
+            selectedStatus,
+            userInfo,
+        } = this.state;
 
         let status = REPORT_STATUS[report.report_status] || {};
 
@@ -147,7 +213,16 @@ class DashboarReportDetail extends Component {
                                         )}
                                     </div>
                                 </Card>
-
+                                {report.response_message && (
+                                    <Card
+                                        type="inner"
+                                        className="mt-3"
+                                        title="ข้อความตอบกลับ"
+                                        bodyStyle={{ whiteSpace: "pre-line" }}
+                                    >
+                                        {report.response_message}
+                                    </Card>
+                                )}
                                 <Row justify="space-between" className="pt-3">
                                     <Col span={6}>
                                         <Button
@@ -168,28 +243,19 @@ class DashboarReportDetail extends Component {
                                                 {[1, 2].includes(
                                                     report.report_status
                                                 ) && (
-                                                    <Popconfirm
-                                                        title={
-                                                            "คุณต้องการยกเลิกคำร้องนี้ใช่ไหม?"
-                                                        }
-                                                        onConfirm={() =>
-                                                            this.updateReportStatus(
-                                                                report.id,
-                                                                4
+                                                    <Button
+                                                        danger
+                                                        type="primary"
+                                                        size="large"
+                                                        className="ms-2"
+                                                        onClick={() =>
+                                                            this.confirmRejectRequestJob(
+                                                                report.id
                                                             )
                                                         }
-                                                        okText={"ยืนยัน"}
-                                                        cancelText={"ยกเลิก"}
                                                     >
-                                                        <Button
-                                                            danger
-                                                            type="primary"
-                                                            size="large"
-                                                            className="ms-2"
-                                                        >
-                                                            ยกเลิกคำร้อง
-                                                        </Button>
-                                                    </Popconfirm>
+                                                        ยกเลิกคำร้อง
+                                                    </Button>
                                                 )}
                                                 {[1].includes(
                                                     report.report_status
@@ -199,9 +265,8 @@ class DashboarReportDetail extends Component {
                                                         size="large"
                                                         className="ms-2"
                                                         onClick={() =>
-                                                            this.updateReportStatus(
-                                                                report.id,
-                                                                2
+                                                            this.confirmApproveRequestJob(
+                                                                report.id
                                                             )
                                                         }
                                                     >
@@ -216,9 +281,8 @@ class DashboarReportDetail extends Component {
                                                         size="large"
                                                         className="ms-2 bg-success"
                                                         onClick={() =>
-                                                            this.updateReportStatus(
-                                                                report.id,
-                                                                3
+                                                            this.confirmAFinishRequestJob(
+                                                                report.id
                                                             )
                                                         }
                                                     >
@@ -231,6 +295,41 @@ class DashboarReportDetail extends Component {
                                 </Row>
                             </Col>
                         </Row>
+
+                        <Modal
+                            title={`ข้อความตอบกลับ (${
+                                selectedStatus == 2
+                                    ? "ดำเนินการ"
+                                    : selectedStatus == 3
+                                    ? "ดำเนินการเสร็จสิ้น"
+                                    : selectedStatus == 4
+                                    ? "ยกเลิกกคำร้อง"
+                                    : ""
+                            })`}
+                            open={isOpenCommentModal}
+                            onCancel={() => this.toggleCommentModal(false)}
+                            footer={false}
+                        >
+                            <Input.TextArea
+                                rows={4}
+                                className="mt-2"
+                                onBlur={(e) =>
+                                    this.onChangeComment(e.target.value)
+                                }
+                            />
+
+                            <div className="text-end mt-3">
+                                <Button
+                                    size="large"
+                                    type="primary"
+                                    onClick={() =>
+                                        this.updateReportStatus(report.id)
+                                    }
+                                >
+                                    ยืนยัน
+                                </Button>
+                            </div>
+                        </Modal>
                     </AccountLayout>
                 </MainLayout>
 
@@ -240,4 +339,4 @@ class DashboarReportDetail extends Component {
     }
 }
 
-export default DashboarReportDetail;
+export default DashboardReportDetail;
