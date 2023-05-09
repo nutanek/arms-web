@@ -2,38 +2,39 @@ import React, { Component } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import Router from "next/router";
-import { Row, Col, Alert, Pagination } from "antd";
+import { Row, Col, Alert, Pagination, Divider } from "antd";
 import { assetPrefix } from "./../next.config";
-import { getJobListApi } from "./../services/apiServices";
+import { getJobListApi, getMemberListApi } from "./../services/apiServices";
 import MainLayout from "./../components/Layout/MainLayout";
 import JobCard from "./../components/Job/JobCard";
 import Loading from "./../components/Utility/Modal/Loading";
+import ArtistCard from "./../components/Artist/ArtistCard";
 
-const title = "หางาน";
+const title = "แพลตฟอร์มจ้างงานด้านดนตรี";
 
-const pageSize = 12;
+const pageSize = 4;
 
 class Home extends Component {
     state = {
         isLoading: false,
         jobs: [],
-        page: 1,
-        totalPage: 5,
-        keyword: "",
+        members: [],
     };
 
     componentDidMount() {
-        setTimeout(() => {
-            let { page = 1, keyword = "" } = Router.query;
+        this.getJobList();
+        this.getMemberList();
+        // setTimeout(() => {
+        //     let { page = 1, keyword = "" } = Router.query;
 
-            this.setState(
-                {
-                    page,
-                    keyword,
-                },
-                () => this.getJobList()
-            );
-        }, 300);
+        //     this.setState(
+        //         {
+        //             page,
+        //             keyword,
+        //         },
+        //         () => this.getJobList()
+        //     );
+        // }, 300);
     }
 
     async getJobList() {
@@ -41,9 +42,9 @@ class Home extends Component {
         try {
             let res = await getJobListApi({
                 params: {
-                    page: this.state.page,
+                    page: 1,
                     size: pageSize,
-                    keyword: this.state.keyword,
+                    keyword: "",
                     id_employer: 0,
                     id_employee: 0,
                     status: 1,
@@ -51,6 +52,31 @@ class Home extends Component {
             });
             this.setState({
                 jobs: res.data,
+            });
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setTimeout(() => {
+                this.setState({ isLoading: false });
+            }, 300);
+        }
+    }
+
+    async getMemberList() {
+        this.setState({ isLoading: true });
+        try {
+            let res = await getMemberListApi({
+                params: {
+                    page: 1,
+                    size: pageSize,
+                    keyword: "",
+                    request_account: "no",
+                    approved_status: 2,
+                    member_type: "employee",
+                },
+            });
+            this.setState({
+                members: res.data,
                 page: res.page,
                 totalPage: res.total_page,
             });
@@ -63,15 +89,8 @@ class Home extends Component {
         }
     }
 
-    async onChangePage(page) {
-        await Router.push(`?page=${page}`);
-        this.setState({ page }, () => {
-            this.getJobList();
-        });
-    }
-
     render() {
-        let { isLoading, jobs, page, totalPage } = this.state;
+        let { isLoading, jobs = [], members = [] } = this.state;
         return (
             <>
                 <Head>
@@ -79,15 +98,58 @@ class Home extends Component {
                     <meta name="description" content={title} />
                 </Head>
                 <MainLayout>
-                    <h1 className="page-title fs-2 text-center fw-bold mt-0 mb-4">
-                        {title}
-                    </h1>
+                    <style jsx global>{`
+                        .header-lg {
+                            background: none !important;
+                            box-shadow: none !important;
+                        }
+                        .header-lg {
+                            position: unset;
+                        }
+                    `}</style>
+
+                    <div className="hero-banner"></div>
+
+                    <div style={{ height: 300 }} className="text-center">
+                        <div className="mb-2">
+                            <img
+                                src={`${assetPrefix}/images/logo-lg.png`}
+                                width={200}
+                                alt="logo"
+                            />
+                        </div>
+                        <h1 className="page-title fs-1 text-center fw-bold text-white mt-0 mb-4">
+                            {title}
+                        </h1>
+                    </div>
+
                     <Row
-                        // style={{ width: "100%" }}
+                        justify="space-between"
+                        align="middle"
+                        className="mb-4"
+                    >
+                        <Col>
+                            <h2 className="page-title fs-2 fw-bold my-0">
+                                งานจ้าง
+                            </h2>
+                        </Col>
+                        <Col>
+                            <div className="fs-6">
+                                <Link href="/jobs" className="text-primary">
+                                    ดูทั้งหมด
+                                </Link>
+                            </div>
+                        </Col>
+                    </Row>
+                    {isLoading && (
+                        <div className="text-center">กำลังโหลด...</div>
+                    )}
+                    <Row
                         gutter={[
                             { xs: 8, sm: 16, md: 24, lg: 32 },
                             { xs: 16, sm: 16, md: 24, lg: 32 },
                         ]}
+                        className="mb-5"
                     >
                         {jobs.map((job) => (
                             <Col
@@ -101,17 +163,45 @@ class Home extends Component {
                         ))}
                     </Row>
 
-                    <div className="text-center mt-5">
-                        <Pagination
-                            current={page}
-                            pageSize={pageSize}
-                            total={totalPage * pageSize}
-                            onChange={this.onChangePage.bind(this)}
-                        />
-                    </div>
+                    <Row
+                        justify="space-between"
+                        align="middle"
+                        className="mb-4"
+                    >
+                        <Col>
+                            <h2 className="page-title fs-2 fw-bold my-0">
+                                ศิลปิน
+                            </h2>
+                        </Col>
+                        <Col>
+                            <div className="fs-6">
+                                <Link href="/artist" className="text-primary">
+                                    ดูทั้งหมด
+                                </Link>
+                            </div>
+                        </Col>
+                    </Row>
+                    {isLoading && (
+                        <div className="text-center">กำลังโหลด...</div>
+                    )}
+                    <Row
+                        gutter={[
+                            { xs: 8, sm: 16, md: 24, lg: 32 },
+                            { xs: 16, sm: 16, md: 24, lg: 32 },
+                        ]}
+                    >
+                        {members.map((member) => (
+                            <Col
+                                key={member.id}
+                                xs={{ span: 12 }}
+                                md={{ span: 8 }}
+                                lg={{ span: 6 }}
+                            >
+                                <ArtistCard item={member} />
+                            </Col>
+                        ))}
+                    </Row>
                 </MainLayout>
-
-                <Loading isOpen={isLoading} />
             </>
         );
     }

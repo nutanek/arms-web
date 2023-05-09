@@ -10,8 +10,12 @@ const { Header, Content, Footer } = Layout;
 
 const menus = [
     {
-        label: <Link href="/">หางาน</Link>,
+        label: <Link href="/">หน้าแรก</Link>,
         key: "home",
+    },
+    {
+        label: <Link href="/jobs">หางาน</Link>,
+        key: "jobs",
     },
     {
         label: <Link href="/hiring">จ้างงาน</Link>,

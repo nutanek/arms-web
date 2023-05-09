@@ -4,10 +4,16 @@ import Image from "next/image";
 import { Row, Col, Menu, Button, Badge } from "antd";
 import { BellOutlined, MenuOutlined } from "@ant-design/icons";
 import { assetPrefix } from "./../../next.config";
+import { getLocalUserInfo, isLoggedIn } from "../../services/appServices";
 import MobileMenuDrawer from "./MobileMenuDrawer";
 
 const HeaderMobile = ({ menus = [], unreadNotiCount, onViewNotification }) => {
+    let [isUserLoggedIn, setIsUserLoggedIn] = useState({});
     let [isOpenMenu, setIsOpenMenu] = useState(false);
+
+    useEffect(() => {
+        setIsUserLoggedIn(isLoggedIn());
+    }, []);
 
     return (
         <header className="header-mobile header-xs">
@@ -27,7 +33,27 @@ const HeaderMobile = ({ menus = [], unreadNotiCount, onViewNotification }) => {
                         </Link>
                     </div>
                 </Col>
-                <Col className="gutter-row">
+                <Col
+                    className="gutter-row"
+                    style={{ display: "flex", gap: "30px" }}
+                >
+                    {isUserLoggedIn && (
+                        <div
+                            className="ps-2"
+                            onClick={() => onViewNotification()}
+                        >
+                            <Badge
+                                size="small"
+                                count={unreadNotiCount}
+                                overflowCount={99}
+                            >
+                                <BellOutlined
+                                    style={{ fontSize: 30, color: "#ffffff" }}
+                                />
+                            </Badge>
+                        </div>
+                    )}
+
                     <MenuOutlined
                         style={{ fontSize: 30, color: "#ffffff" }}
                         onClick={() => setIsOpenMenu(true)}

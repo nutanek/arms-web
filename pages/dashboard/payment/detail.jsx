@@ -289,8 +289,13 @@ class DashboardPaymentDetail extends Component {
                                                         type="primary"
                                                         size="large"
                                                         className="ms-2"
+                                                        onClick={() =>
+                                                            this.confirmApprovePayment(
+                                                                job.id
+                                                            )
+                                                        }
                                                     >
-                                                        อนนุมัติ
+                                                        อนุมัติ
                                                     </Button>
                                                 )}
                                             </div>

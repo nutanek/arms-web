@@ -1,20 +1,18 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Button, Modal, Drawer, List } from "antd";
-import {
-    HomeOutlined,
-    BuildOutlined,
-    LoginOutlined,
-    UserAddOutlined,
-    UserOutlined,
-    HeartOutlined,
-} from "@ant-design/icons";
+import { Drawer, List } from "antd";
 import {
     isLoggedIn as checkLoggedIn,
     getLocalUserInfo,
 } from "../../services/appServices";
 
 const data = ({ userId }) => [
+    {
+        title: "หน้าแรก",
+        hideOnAuth: false,
+        needAuth: false,
+        link: `/`,
+    },
     {
         title: "หางาน",
         hideOnAuth: false,
