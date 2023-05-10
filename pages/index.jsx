@@ -176,7 +176,7 @@ class Home extends Component {
                         </Col>
                         <Col>
                             <div className="fs-6">
-                                <Link href="/artist" className="text-primary">
+                                <Link href="/artists" className="text-primary">
                                     ดูทั้งหมด
                                 </Link>
                             </div>
