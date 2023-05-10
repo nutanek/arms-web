@@ -159,7 +159,7 @@ const AccountSidebar = (props) => {
                             </div>
                         </Link>
                     )}
-                    {["admin", "employer", "employeee"].includes(
+                    {["admin", "employer", "employee"].includes(
                         user.member_type
                     ) && (
                         <Link href={`/dashboard/job/list`}>
