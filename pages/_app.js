@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Head from "next/head";
 import Router from "next/router";
 import NProgress from "nprogress";
@@ -9,6 +9,8 @@ import { getUserProfileListApi } from "./../services/apiServices";
 import { isLoggedIn, setLocalUserInfo } from "./../services/appServices";
 
 export default function App({ Component, pageProps }) {
+    let [isMounted, setIsMounted] = useState(false);
+
     useEffect(() => {
         const handleRouteStart = () => {
             NProgress.configure({
@@ -39,6 +41,7 @@ export default function App({ Component, pageProps }) {
         if (isLoggedIn()) {
             getUserProfileList();
         }
+        setIsMounted(true);
     });
 
     const getUserProfileList = async () => {
@@ -62,6 +65,11 @@ export default function App({ Component, pageProps }) {
                     content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=0"
                 />
             </Head>
+            {!isMounted && (
+                <div className="page-loading">
+                    <div className="fs-3">Loading...</div>
+                </div>
+            )}
             <Component {...pageProps} />
         </ConfigProvider>
     );
