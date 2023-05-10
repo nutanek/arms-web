@@ -17,16 +17,18 @@ import {
     Divider,
     Upload,
     Image,
+    Rate,
+    Alert,
     message,
+    Tag,
 } from "antd";
-import { PhoneOutlined, MailOutlined } from "@ant-design/icons";
+import { PhoneOutlined, MailOutlined, StarOutlined } from "@ant-design/icons";
 import cloneDeep from "lodash/cloneDeep";
 import dayjs from "dayjs";
 import numeral from "numeral";
 import { assetPrefix } from "./../../next.config";
 import { IMAGE_PATH } from "./../../constants/config";
 import { provinces } from "./../../constants/provinces";
-import { JOB_TYPES } from "./../../constants/appConstants";
 import {
     getSkillListApi,
     getFeeListApi,
@@ -35,10 +37,12 @@ import {
     updateJobDetailApi,
     updateJobStatusApi,
     uploadImageApi,
+    updateJobRatingApi,
 } from "./../../services/apiServices";
 import { getLocalUserInfo } from "../../services/appServices";
 import Loading from "./../Utility/Modal/Loading";
 import SkillAddModal from "./../Skill/SkillAddModal";
+import { JOB_STATUS } from "@/constants/appConstants";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -47,12 +51,15 @@ class JobForm extends Component {
     state = {
         isLoadng: false,
         isSubmitted: false,
+        isOpenModalRating: false,
         skills: [],
         fees: [],
         job: {
             price: 0,
             id_service_charge: 0,
+            employee_rating: 0,
         },
+        tempRating: 0,
     };
 
     formRef = React.createRef();
@@ -89,7 +96,7 @@ class JobForm extends Component {
         this.setState({ isLoading: true });
         try {
             let job = await getJobDetailApi({ params: { id } });
-            this.setState({ job });
+            this.setState({ job, tempRating: job.employee_rating });
             this.formRef.current?.setFieldsValue({
                 skills: job.skills.map((skill) => skill.id),
                 location_name: job.location?.name,
@@ -169,7 +176,9 @@ class JobForm extends Component {
                 okText: "ตกลง",
             });
         } finally {
-            this.setState({ isLoading: false });
+            setTimeout(() => {
+                this.setState({ isLoading: false });
+            }, 300);
         }
     }
 
@@ -180,16 +189,20 @@ class JobForm extends Component {
                 params: { id },
                 body: { status },
             });
-            Modal.success({
-                title: "สำเร็จ",
-                content: res.message,
-                centered: true,
-                maskClosable: true,
-                okText: "ตกลง",
-                afterClose: () => {
-                    this.getJobDetail(id);
-                },
-            });
+            if (status == 4) {
+                this.toggleModalRating(true);
+            } else {
+                Modal.success({
+                    title: "สำเร็จ",
+                    content: res.message,
+                    centered: true,
+                    maskClosable: true,
+                    okText: "ตกลง",
+                    afterClose: () => {
+                        this.getJobDetail(id);
+                    },
+                });
+            }
         } catch (error) {
             Modal.error({
                 title: "ไม่สำเร็จ",
@@ -199,8 +212,48 @@ class JobForm extends Component {
                 okText: "ตกลง",
             });
         } finally {
-            this.setState({ isLoading: false });
+            setTimeout(() => {
+                this.setState({ isLoading: false });
+            }, 300);
         }
+    }
+
+    async updateJobRating(jobId) {
+        this.setState({ isLoading: true });
+        try {
+            await updateJobRatingApi({
+                params: { id: jobId },
+                body: { rating: this.state.tempRating },
+            });
+            this.toggleModalRating(false);
+            this.showThankyouModal();
+        } catch (error) {
+            Modal.error({
+                title: "ไม่สำเร็จ",
+                content: error?.message,
+                centered: true,
+                maskClosable: true,
+                okText: "ตกลง",
+            });
+        } finally {
+            setTimeout(() => {
+                this.setState({ isLoading: false });
+            }, 300);
+        }
+    }
+
+    showThankyouModal() {
+        let {job} = this.state
+        Modal.success({
+            title: "กราบขอบพระคุณที่ใช้บริการ ARMS",
+            content:
+                "หวังเป็นอย่างยิ่งว่าท่านจะประทับใจ และกลับมาใช้บริการอีกครั้ง",
+            centered: true,
+            maskClosable: true,
+            okText: "ตกลง",
+            onCancel: () => this.getJobDetail(job.id),
+            onOk: () => this.getJobDetail(job.id)
+        });
     }
 
     async uploadImage(file, isRealSize = false, onSuccess) {
@@ -353,13 +406,38 @@ class JobForm extends Component {
         });
     }
 
+    toggleModalRating(status) {
+        this.setState({ isOpenModalRating: status });
+    }
+
+    onChangeRating(rating) {
+        this.setState({ tempRating: rating });
+    }
+
     render() {
-        let { isLoading, job, skills, fees } = this.state;
+        let { isLoading, job, skills, fees, tempRating, isOpenModalRating } =
+            this.state;
 
         let payment = this.calculatePyment(job.price, job.service_charge?.id);
+        let jobStatus = JOB_STATUS[job.job_status] || {};
 
         return (
             <>
+                {!!job.id && (
+                    <Alert
+                        description={
+                            <div className="fs-6">
+                                <b>สถานะของงาน: </b>
+                                <Tag color={jobStatus.color}>
+                                    {jobStatus.name}
+                                </Tag>
+                            </div>
+                        }
+                        type="info"
+                        className="mb-3"
+                    />
+                )}
+
                 {!!job.id && !!job.employee?.id && (
                     <Card
                         headStyle={{ background: "#2980b9", color: "#fff" }}
@@ -407,6 +485,7 @@ class JobForm extends Component {
                                 />
                             </List.Item>
                         </List>
+
                         <div className="text-end">
                             {[2].includes(job.job_status) && (
                                 <Button
@@ -445,6 +524,31 @@ class JobForm extends Component {
                                     จบงาน
                                 </Button>
                             )}
+                            {[4].includes(job.job_status) &&
+                                (job.employee_rating == 0 ? (
+                                    <Button
+                                        ghost
+                                        type="primary"
+                                        size="large"
+                                        className="ms-2"
+                                        icon={<StarOutlined />}
+                                        onClick={() =>
+                                            this.toggleModalRating(true)
+                                        }
+                                    >
+                                        ให้คะแนนศิลปิน
+                                    </Button>
+                                ) : (
+                                    <div>
+                                        <Rate
+                                            value={job.employee_rating}
+                                            disabled
+                                        />
+                                        <span className="ms-2 fs-6 fw-bold">
+                                            ({job.employee_rating}/5)
+                                        </span>
+                                    </div>
+                                ))}
                         </div>
                     </Card>
                 )}
@@ -772,32 +876,62 @@ class JobForm extends Component {
                             </Button>
                         </Col>
                         <Col span={18}>
-                            <div className="text-end">
-                                {!!job.id && (
+                            {![4].includes(job.job_status) && (
+                                <div className="text-end">
+                                    {!!job.id && (
+                                        <Button
+                                            danger
+                                            type="primary"
+                                            size="large"
+                                            className="ms-2"
+                                            onClick={() =>
+                                                this.confirmCancelJob(job.id)
+                                            }
+                                        >
+                                            ยกเลิกงาน
+                                        </Button>
+                                    )}
                                     <Button
-                                        danger
+                                        htmlType="submit"
                                         type="primary"
                                         size="large"
                                         className="ms-2"
-                                        onClick={() =>
-                                            this.confirmCancelJob(job.id)
-                                        }
                                     >
-                                        ยกเลิกงาน
+                                        {!!job.id ? "บันทึกข้อมูล" : "ลงประกาศ"}
                                     </Button>
-                                )}
-                                <Button
-                                    htmlType="submit"
-                                    type="primary"
-                                    size="large"
-                                    className="ms-2"
-                                >
-                                    {!!job.id ? "บันทึกข้อมูล" : "ลงประกาศ"}
-                                </Button>
-                            </div>
+                                </div>
+                            )}
                         </Col>
                     </Row>
                 </Form>
+
+                <Modal
+                    open={isOpenModalRating}
+                    centered
+                    okText="ยืนยัน"
+                    cancelText="ไม่ใช่ตอนนี้"
+                    okButtonProps={{ size: "large", disabled: tempRating == 0 }}
+                    cancelButtonProps={{ size: "large" }}
+                    onOk={() => this.updateJobRating(job.id)}
+                    onCancel={() => {
+                        this.onChangeRating(job.employee_rating);
+                        this.toggleModalRating(false);
+                        if (job.job_status !== 4) {
+                            this.showThankyouModal();
+                        }
+                    }}
+                >
+                    <div className="mt-3 text-center fs-5 fw-bold">
+                        กรุณาให้คะแนนการทำงานของศิลปิน
+                    </div>
+                    <div className="text-center py-3">
+                        <Rate
+                            value={tempRating}
+                            className="fs-1"
+                            onChange={this.onChangeRating.bind(this)}
+                        />
+                    </div>
+                </Modal>
 
                 <Loading isOpen={isLoading} />
             </>
