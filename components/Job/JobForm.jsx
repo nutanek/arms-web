@@ -56,7 +56,9 @@ class JobForm extends Component {
         fees: [],
         job: {
             price: 0,
-            id_service_charge: 0,
+            service_charge: {
+                id: 0,
+            },
             employee_rating: 0,
         },
         tempRating: 0,
@@ -243,7 +245,7 @@ class JobForm extends Component {
     }
 
     showThankyouModal() {
-        let {job} = this.state
+        let { job } = this.state;
         Modal.success({
             title: "กราบขอบพระคุณที่ใช้บริการ ARMS",
             content:
@@ -252,7 +254,7 @@ class JobForm extends Component {
             maskClosable: true,
             okText: "ตกลง",
             onCancel: () => this.getJobDetail(job.id),
-            onOk: () => this.getJobDetail(job.id)
+            onOk: () => this.getJobDetail(job.id),
         });
     }
 
@@ -302,7 +304,9 @@ class JobForm extends Component {
 
     onChangeServiceCharge(id) {
         let job = cloneDeep(this.state.job);
-        job.id_service_charge = id;
+        if (job.service_charge) {
+            job.service_charge.id = id;
+        }
         this.setState({ job });
     }
 
@@ -417,7 +421,6 @@ class JobForm extends Component {
     render() {
         let { isLoading, job, skills, fees, tempRating, isOpenModalRating } =
             this.state;
-
         let payment = this.calculatePyment(job.price, job.service_charge?.id);
         let jobStatus = JOB_STATUS[job.job_status] || {};
 
