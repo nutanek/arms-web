@@ -32,6 +32,7 @@ const JOB_DETAIL_ADD = `${API_URL_V1}/job-detail-add`;
 const JOB_DETAIL_UPDATE = `${API_URL_V1}/job-detail-update?id=:id`;
 const JOB_REQUEST = `${API_URL_V1}/job-request?id=:id`;
 const JOB_STATUS_UPDATE = `${API_URL_V1}/job-status-update?id=:id`;
+const JOB_RATING_UPDATE = `${API_URL_V1}/job-rating-update?id=:id`;
 
 const FEE_LIST = `${API_URL_V1}/fee-list?page=:page&size=:size`;
 const FEE_DETAIL = `${API_URL_V1}/fee-detail?id=:id`;
@@ -206,6 +207,13 @@ export const updateJobStatusApi = async (props) =>
     callApi({
         ...props,
         url: JOB_STATUS_UPDATE,
+        method: "POST",
+    });
+
+export const updateJobRatingApi = async (props) =>
+    callApi({
+        ...props,
+        url: JOB_RATING_UPDATE,
         method: "POST",
     });
 

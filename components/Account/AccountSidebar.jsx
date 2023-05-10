@@ -85,7 +85,8 @@ const AccountSidebar = (props) => {
                     {user.display_name}
                 </div>
                 <div className="text-center">
-                    ประเภท: <Tag color="#108ee9">
+                    ประเภท:{" "}
+                    <Tag color="#108ee9">
                         {MEMBER_TYPES[user.member_type]?.name ||
                             "ไม่ยืนยันตัวตน"}
                     </Tag>
@@ -154,27 +155,30 @@ const AccountSidebar = (props) => {
                                 <div className="icon">
                                     <RedEnvelopeOutlined />
                                 </div>
-                                <div className="text">
-                                    อนุมัติการชำระเงิน
-                                </div>
+                                <div className="text">อนุมัติการชำระเงิน</div>
                             </div>
                         </Link>
                     )}
-                    <Link href={`/dashboard/job/list`}>
-                        <div
-                            className={`menu-item pointer ${
-                                PATH_ACTIVE.jobEmployer.includes(currentRoute)
-                                    ? "active"
-                                    : ""
-                            }`}
-                        >
-                            <div className="icon">
-                                <NotificationOutlined />
+                    {["admin", "employer", "employeee"].includes(
+                        user.member_type
+                    ) && (
+                        <Link href={`/dashboard/job/list`}>
+                            <div
+                                className={`menu-item pointer ${
+                                    PATH_ACTIVE.jobEmployer.includes(
+                                        currentRoute
+                                    )
+                                        ? "active"
+                                        : ""
+                                }`}
+                            >
+                                <div className="icon">
+                                    <NotificationOutlined />
+                                </div>
+                                <div className="text">งานที่ประกาศจ้าง</div>
                             </div>
-                            <div className="text">งานที่ประกาศจ้าง</div>
-                        </div>
-                    </Link>
-
+                        </Link>
+                    )}
                     {["employee"].includes(user.member_type) && (
                         <Link href={`/dashboard/job/request-list`}>
                             <div
@@ -225,7 +229,7 @@ const AccountSidebar = (props) => {
                     </Link>
 
                     <div
-                        className="menu-item pointer"
+                        className="menu-item pointer text-danger"
                         onClick={() => showConfirmLogoutModal()}
                     >
                         <div className="icon">

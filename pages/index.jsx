@@ -1,13 +1,11 @@
 import React, { Component } from "react";
 import Head from "next/head";
 import Link from "next/link";
-import Router from "next/router";
-import { Row, Col, Alert, Pagination, Divider } from "antd";
+import { Row, Col } from "antd";
 import { assetPrefix } from "./../next.config";
 import { getJobListApi, getMemberListApi } from "./../services/apiServices";
 import MainLayout from "./../components/Layout/MainLayout";
 import JobCard from "./../components/Job/JobCard";
-import Loading from "./../components/Utility/Modal/Loading";
 import ArtistCard from "./../components/Artist/ArtistCard";
 
 const title = "แพลตฟอร์มจ้างงานด้านดนตรี";
@@ -24,17 +22,6 @@ class Home extends Component {
     componentDidMount() {
         this.getJobList();
         this.getMemberList();
-        // setTimeout(() => {
-        //     let { page = 1, keyword = "" } = Router.query;
-
-        //     this.setState(
-        //         {
-        //             page,
-        //             keyword,
-        //         },
-        //         () => this.getJobList()
-        //     );
-        // }, 300);
     }
 
     async getJobList() {
@@ -106,16 +93,25 @@ class Home extends Component {
                         .header-lg {
                             position: unset;
                         }
+                        .hero-banner::after {
+                            background-image: url(${assetPrefix}/images/header-divider.svg);
+                        }
                     `}</style>
 
                     <div
-                        className="hero-banner"
+                        className="hero-banner background"
                         style={{
                             backgroundImage: `url(${assetPrefix}/images/bg-hero.jpeg)`,
                         }}
-                    ></div>
+                    >
+                        {Array.from(Array(100), (_, index) => index + 1).map(
+                            (index) => (
+                                <span key={index}></span>
+                            )
+                        )}
+                    </div>
 
-                    <div style={{ height: 300 }} className="text-center">
+                    <div className="hero-banner-text text-center">
                         <div className="mb-2">
                             <img
                                 src={`${assetPrefix}/images/logo-lg.png`}

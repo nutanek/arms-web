@@ -46,11 +46,16 @@ const JobCard = ({ item = {}, onViewDetail }) => {
                     <div className="card-title text-center">
                         <div className="fw-bold fs-6">{item.title}</div>
 
-                        <div className="text-secondary">
+                        <div className="text-secondary my-2">
                             <b>วันเริ่มงาน: </b>
                             {moment(
                                 `${item.start_date} ${item.start_time}`
-                            ).format("DD/MM/YYYY HH:mm น.")}
+                            ).format("DD/MM/YYYY")}
+                            <br />
+                            <b>เวลา: </b>
+                            {moment(
+                                `${item.start_date} ${item.start_time}`
+                            ).format("HH:mm น.")}
                         </div>
                         <div className="fw-bold fs-5 text-danger">
                             {numeral(item.price).format("0,0")} บาท
