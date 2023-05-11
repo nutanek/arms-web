@@ -12,13 +12,13 @@ import {
     Modal,
     Divider,
     Upload,
-    Card,
+    Tag,
     message,
 } from "antd";
 import dayjs from "dayjs";
 import cloneDeep from "lodash/cloneDeep";
 import { assetPrefix } from "./../../../next.config";
-import { GENDERS } from "./../../../constants/appConstants";
+import { GENDERS, MEMBER_TYPES } from "./../../../constants/appConstants";
 import { IMAGE_PATH } from "./../../../constants/config";
 import {
     getSkillListApi,
@@ -291,6 +291,14 @@ class DashboardMemberDetail extends Component {
                                                     อัปโหลดรูปภาพ
                                                 </Button>
                                             </Upload>
+                                            <div className="text-center mt-3">
+                                                ประเภท:{" "}
+                                                <Tag color="#108ee9">
+                                                    {MEMBER_TYPES[
+                                                        member.member_type
+                                                    ]?.name || "ไม่ยืนยันตัวตน"}
+                                                </Tag>
+                                            </div>
                                         </Col>
                                     </Row>
 
