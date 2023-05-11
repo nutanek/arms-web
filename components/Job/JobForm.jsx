@@ -879,7 +879,7 @@ class JobForm extends Component {
                             </Button>
                         </Col>
                         <Col span={18}>
-                            {![4].includes(job.job_status) && (
+                            {![4, 5, 7].includes(job.job_status) && (
                                 <div className="text-end">
                                     {!!job.id && (
                                         <Button

@@ -309,6 +309,7 @@ class DashboardReportDetail extends Component {
                             open={isOpenCommentModal}
                             onCancel={() => this.toggleCommentModal(false)}
                             footer={false}
+                            centered
                         >
                             <Input.TextArea
                                 rows={4}
