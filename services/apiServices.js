@@ -7,46 +7,46 @@ import { getLocalAccessToken, signout } from "./../services/appServices";
 const API_URL_V1 = `${API_PATH}/v1`;
 
 // Api Constants
-const SIGNIN = `${API_URL_V1}/signin`;
-const SIGNUP = `${API_URL_V1}/signup`;
-const UPLOAD_IMAGE = `${API_URL_V1}/upload`;
+const SIGNIN = `${API_URL_V1}/signin.php`;
+const SIGNUP = `${API_URL_V1}/signup.php`;
+const UPLOAD_IMAGE = `${API_URL_V1}/upload.php`;
 
-const USER_PROFILE = `${API_URL_V1}/user-profile`;
+const USER_PROFILE = `${API_URL_V1}/user-profile.php`;
 
-const MEMBER_LIST = `${API_URL_V1}/member-list?page=:page&size=:size&keyword=:keyword&request_account=:request_account&approved_status=:approved_status&member_type=:member_type`;
-const MEMBER_DETAIL = `${API_URL_V1}/member-detail?id=:id`;
-const MEMBER_DETAIL_ADD = `${API_URL_V1}/member-detail-add`;
-const MEMBER_DETAIL_UPDATE = `${API_URL_V1}/member-detail-update?id=:id`;
-const MEMBER_DETAIL_REMOVE = `${API_URL_V1}/member-detail-remove?id=:id`;
-const MEMBER_ACCOUNT_REQUEST = `${API_URL_V1}/member-account-request`;
-const MEMBER_ACCOUNT_STATUS_UPDATE = `${API_URL_V1}/member-account-status-update?id=:id`;
+const MEMBER_LIST = `${API_URL_V1}/member-list.php?page=:page&size=:size&keyword=:keyword&request_account=:request_account&approved_status=:approved_status&member_type=:member_type`;
+const MEMBER_DETAIL = `${API_URL_V1}/member-detail.php?id=:id`;
+const MEMBER_DETAIL_ADD = `${API_URL_V1}/member-detail-add.php`;
+const MEMBER_DETAIL_UPDATE = `${API_URL_V1}/member-detail-update.php?id=:id`;
+const MEMBER_DETAIL_REMOVE = `${API_URL_V1}/member-detail-remove.php?id=:id`;
+const MEMBER_ACCOUNT_REQUEST = `${API_URL_V1}/member-account-request.php`;
+const MEMBER_ACCOUNT_STATUS_UPDATE = `${API_URL_V1}/member-account-status-update.php?id=:id`;
 
-const REPORT_LIST = `${API_URL_V1}/report-list?page=:page&size=:size&keyword=:keyword&id_member=:id_member`;
-const REPORT_DETAIL = `${API_URL_V1}/report-detail?id=:id`;
-const REPORT_DETAIL_ADD = `${API_URL_V1}/report-detail-add`;
-const REPORT_STATUS_UPDATE = `${API_URL_V1}/report-status-update?id=:id`;
+const REPORT_LIST = `${API_URL_V1}/report-list.php?page=:page&size=:size&keyword=:keyword&id_member=:id_member`;
+const REPORT_DETAIL = `${API_URL_V1}/report-detail.php?id=:id`;
+const REPORT_DETAIL_ADD = `${API_URL_V1}/report-detail-add.php`;
+const REPORT_STATUS_UPDATE = `${API_URL_V1}/report-status-update.php?id=:id`;
 
-const JOB_LIST = `${API_URL_V1}/job-list?page=:page&size=:size&keyword=:keyword&id_employer=:id_employer&id_employee=:id_employee&status=:status`;
-const JOB_DETAIL = `${API_URL_V1}/job-detail?id=:id`;
-const JOB_DETAIL_ADD = `${API_URL_V1}/job-detail-add`;
-const JOB_DETAIL_UPDATE = `${API_URL_V1}/job-detail-update?id=:id`;
-const JOB_REQUEST = `${API_URL_V1}/job-request?id=:id`;
-const JOB_STATUS_UPDATE = `${API_URL_V1}/job-status-update?id=:id`;
-const JOB_RATING_UPDATE = `${API_URL_V1}/job-rating-update?id=:id`;
+const JOB_LIST = `${API_URL_V1}/job-list.php?page=:page&size=:size&keyword=:keyword&id_employer=:id_employer&id_employee=:id_employee&status=:status`;
+const JOB_DETAIL = `${API_URL_V1}/job-detail.php?id=:id`;
+const JOB_DETAIL_ADD = `${API_URL_V1}/job-detail-add.php`;
+const JOB_DETAIL_UPDATE = `${API_URL_V1}/job-detail-update.php?id=:id`;
+const JOB_REQUEST = `${API_URL_V1}/job-request.php?id=:id`;
+const JOB_STATUS_UPDATE = `${API_URL_V1}/job-status-update.php?id=:id`;
+const JOB_RATING_UPDATE = `${API_URL_V1}/job-rating-update.php?id=:id`;
 
-const FEE_LIST = `${API_URL_V1}/fee-list?page=:page&size=:size`;
-const FEE_DETAIL = `${API_URL_V1}/fee-detail?id=:id`;
-const FEE_DETAIL_ADD = `${API_URL_V1}/fee-detail-add`;
-const FEE_DETAIL_UPDATE = `${API_URL_V1}/fee-detail-update?id=:id`;
-const FEE_DETAIL_REMOVE = `${API_URL_V1}/fee-detail-remove?id=:id`;
+const FEE_LIST = `${API_URL_V1}/fee-list.php?page=:page&size=:size`;
+const FEE_DETAIL = `${API_URL_V1}/fee-detail.php?id=:id`;
+const FEE_DETAIL_ADD = `${API_URL_V1}/fee-detail-add.php`;
+const FEE_DETAIL_UPDATE = `${API_URL_V1}/fee-detail-update.php?id=:id`;
+const FEE_DETAIL_REMOVE = `${API_URL_V1}/fee-detail-remove.php?id=:id`;
 
-const NOTIFICATION_LIST = `${API_URL_V1}/notification-list?page=:page&size=:size`;
-const NOTIFICATION_MARK_AS_READ = `${API_URL_V1}/notification-mark-as-read`;
+const NOTIFICATION_LIST = `${API_URL_V1}/notification-list.php?page=:page&size=:size`;
+const NOTIFICATION_MARK_AS_READ = `${API_URL_V1}/notification-mark-as-read.php`;
 
-const PAYMENT_LIST = `${API_URL_V1}/payment-list?page=:page&size=:size`;
+const PAYMENT_LIST = `${API_URL_V1}/payment-list.php?page=:page&size=:size`;
 
-const SKILL_LIST = `${API_URL_V1}/skill-list`;
-const SKILL_ADD = `${API_URL_V1}/skill-add`;
+const SKILL_LIST = `${API_URL_V1}/skill-list.php`;
+const SKILL_ADD = `${API_URL_V1}/skill-add.php`;
 
 export const signinApi = async (props) =>
     callApi({

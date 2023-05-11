@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 
-const basePath = '/arms';
+const basePath = '';
 
 const nextConfig = {
     assetPrefix: basePath,

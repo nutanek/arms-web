@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import Head from "next/head";
+import Link from "next/link";
 import Router from "next/router";
-import { Row, Col, Modal } from "antd";
+import { Row, Col, Modal, Result, Button } from "antd";
 import { getSkillListApi, addJobDetailApi } from "./../services/apiServices";
-import { isLoggedIn } from "./../services/appServices";
+import { isLoggedIn, getLocalUserInfo } from "./../services/appServices";
 import MainLayout from "./../components/Layout/MainLayout";
 import Loading from "./../components/Utility/Modal/Loading";
 import JobForm from "./../components/Job/JobForm";
@@ -15,14 +16,17 @@ class HiringPage extends Component {
         isLoadng: false,
         isSubmitted: false,
         skills: [],
+        userInfo: {},
     };
 
     formRef = React.createRef();
 
     componentDidMount() {
+        let userInfo = getLocalUserInfo();
+        this.setState({ userInfo });
         this.getSkills();
         if (!isLoggedIn()) {
-            Router.push('/signin')
+            Router.push("/signin");
         }
     }
 
@@ -83,7 +87,7 @@ class HiringPage extends Component {
     }
 
     render() {
-        let { isLoading, skills } = this.state;
+        let { isLoading, userInfo } = this.state;
         return (
             <>
                 <Head>
@@ -94,9 +98,32 @@ class HiringPage extends Component {
                     <h1 className="page-title fs-2 text-center fw-bold mt-0 mb-4">
                         {title}
                     </h1>
+
                     <Row justify="center">
                         <Col md={{ span: 14 }}>
-                            <JobForm />
+                            {userInfo.approved_status == 2 ? (
+                                <JobForm />
+                            ) : (
+                                <Result
+                                    status="403"
+                                    title="ท่านยังไม่ผ่านการอนุมัติบัญชี"
+                                    subTitle={
+                                        <span className="fs-6">
+                                            เฉพาะผู้ที่ผ่านการอนุมัติบัญชีแล้วเท่านั้น
+                                            จึงจะสามารถประกาศจ้างงานได้
+                                        </span>
+                                    }
+                                    extra={
+                                        <Link
+                                            href={`/dashboard/account/request`}
+                                        >
+                                            <Button type="primary" size="large">
+                                                ขออนุมัติบัญชี
+                                            </Button>
+                                        </Link>
+                                    }
+                                />
+                            )}
                         </Col>
                     </Row>
                 </MainLayout>

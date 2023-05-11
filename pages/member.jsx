@@ -97,10 +97,6 @@ class Member extends Component {
 
                             <Card
                                 type="inner"
-                                // headStyle={{
-                                //     backgroundColor: "#389e0d",
-                                //     color: "#ffffff",
-                                // }}
                                 title={<div className="fs-6">รายละเอียด</div>}
                                 className="mb-3"
                             >
@@ -116,7 +112,8 @@ class Member extends Component {
                                         "DD/MM/YYYY"
                                     )}
                                 </div>
-                                {!!member.skills &&
+                                {member.member_type === "employee" &&
+                                    !!member.skills &&
                                     member.skills.length > 0 && (
                                         <div className="fs-6">
                                             <b>ทักษะ: </b>
@@ -148,49 +145,52 @@ class Member extends Component {
                                 </div>
                             </Card>
 
-                            <Row gutter={15} className="mb-3">
-                                <Col span={12}>
-                                    <Card
-                                        className="text-center"
-                                        style={{
-                                            borderColor: "#198754",
-                                            height: "100%",
-                                        }}
-                                    >
-                                        <div className="fw-bold fs-6">
-                                            จำนวนงานที่ทำแล้ว
-                                        </div>
-                                        <div className="text-success fw-bold fs-1">
-                                            {member.success_count || 0}
-                                        </div>
-                                        <div className="text-secondary fs-6">
-                                            งาน
-                                        </div>
-                                    </Card>
-                                </Col>
-                                <Col span={12}>
-                                    <Card
-                                        className="text-center"
-                                        style={{
-                                            borderColor: "#0d6efd",
-                                            height: "100%",
-                                        }}
-                                    >
-                                        <div className="fw-bold fs-6">
-                                            คะแนนจากผู้ว่าจ้าง
-                                        </div>
-                                        <div className="text-primary">
-                                            <span className="fw-bold fs-1">
-                                                {member.rating || "-"}
-                                            </span>
-                                            <span className="fs-5">/5</span>
-                                        </div>
-                                        <div className="text-secondary fs-6">
-                                            ผู้ให้คะแนน {member.rating_count} คน
-                                        </div>
-                                    </Card>
-                                </Col>
-                            </Row>
+                            {member.member_type === "employee" && (
+                                <Row gutter={15} className="mb-3">
+                                    <Col span={12}>
+                                        <Card
+                                            className="text-center"
+                                            style={{
+                                                borderColor: "#198754",
+                                                height: "100%",
+                                            }}
+                                        >
+                                            <div className="fw-bold fs-6">
+                                                จำนวนงานที่ทำแล้ว
+                                            </div>
+                                            <div className="text-success fw-bold fs-1">
+                                                {member.success_count || 0}
+                                            </div>
+                                            <div className="text-secondary fs-6">
+                                                งาน
+                                            </div>
+                                        </Card>
+                                    </Col>
+                                    <Col span={12}>
+                                        <Card
+                                            className="text-center"
+                                            style={{
+                                                borderColor: "#0d6efd",
+                                                height: "100%",
+                                            }}
+                                        >
+                                            <div className="fw-bold fs-6">
+                                                คะแนนจากผู้ว่าจ้าง
+                                            </div>
+                                            <div className="text-primary">
+                                                <span className="fw-bold fs-1">
+                                                    {member.rating || "-"}
+                                                </span>
+                                                <span className="fs-5">/5</span>
+                                            </div>
+                                            <div className="text-secondary fs-6">
+                                                ผู้ให้คะแนน{" "}
+                                                {member.rating_count} คน
+                                            </div>
+                                        </Card>
+                                    </Col>
+                                </Row>
+                            )}
                         </Col>
                     </Row>
                 </MainLayout>

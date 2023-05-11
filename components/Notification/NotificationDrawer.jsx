@@ -1,32 +1,43 @@
 import React, { Component } from "react";
-import Head from "next/head";
-import Link from "next/link";
 import Router from "next/router";
-import { Row, Col, Drawer, List, Pagination, Button, Empty } from "antd";
+import { Drawer, List, Button, Empty } from "antd";
 import {
     ReloadOutlined,
     ClockCircleOutlined,
     CheckCircleTwoTone,
     ExclamationCircleTwoTone,
     BellTwoTone,
-    WarningTwoTone
+    WarningTwoTone,
+    SyncOutlined,
 } from "@ant-design/icons";
-import moment from "moment";
 import { assetPrefix } from "./../../next.config";
 import {
     getNotificationListApi,
     markAsReadNotificationApi,
 } from "./../../services/apiServices";
 import { getTimeFromNow } from "./../../services/appServices";
-import Loading from "./../Utility/Modal/Loading";
 
 const pageSize = 10;
 
 const NOTI_TYPE = {
-    info: { icon: <BellTwoTone className="fs-4" twoToneColor="#1677ff"/>, color: "#1677ff" },
-    success: { icon: <CheckCircleTwoTone className="fs-4" twoToneColor="#389e0d"/>, color: "#389e0d" },
-    danger: { icon: <ExclamationCircleTwoTone className="fs-4" twoToneColor="#cf1322"/>, color: "#cf1322" },
-    warning: { icon: <WarningTwoTone className="fs-4" twoToneColor="#fa8c16"/>, color: "#fa8c16" },
+    info: {
+        icon: <BellTwoTone className="fs-4" twoToneColor="#1677ff" />,
+        color: "#1677ff",
+    },
+    success: {
+        icon: <CheckCircleTwoTone className="fs-4" twoToneColor="#389e0d" />,
+        color: "#389e0d",
+    },
+    danger: {
+        icon: (
+            <ExclamationCircleTwoTone className="fs-4" twoToneColor="#cf1322" />
+        ),
+        color: "#cf1322",
+    },
+    warning: {
+        icon: <WarningTwoTone className="fs-4" twoToneColor="#fa8c16" />,
+        color: "#fa8c16",
+    },
 };
 
 class NotificationDrawer extends Component {
@@ -140,7 +151,13 @@ class NotificationDrawer extends Component {
                                             {NOTI_TYPE[item.type]?.icon}
                                         </div>
                                         <div style={{ flex: 1 }}>
-                                            <div className="fs-6 fw-bold mb-2" style={{color: NOTI_TYPE[item.type]?.color }}>
+                                            <div
+                                                className="fs-6 fw-bold mb-2"
+                                                style={{
+                                                    color: NOTI_TYPE[item.type]
+                                                        ?.color,
+                                                }}
+                                            >
                                                 {item.message}
                                             </div>
                                             <div className="text-secondary">
@@ -158,12 +175,21 @@ class NotificationDrawer extends Component {
                                     <Button
                                         block
                                         size="large"
-                                        icon={<ReloadOutlined />}
+                                        icon={
+                                            isLoading ? (
+                                                <SyncOutlined spin />
+                                            ) : (
+                                                <ReloadOutlined />
+                                            )
+                                        }
                                         onClick={() =>
                                             this.loadNotificationList()
                                         }
+                                        disabled={isLoading}
                                     >
-                                        ดูเพิ่มเติม
+                                        {isLoading
+                                            ? "กำลังโหลด..."
+                                            : "ดูเพิ่มเติม"}
                                     </Button>
                                 )}
                             </div>
@@ -171,7 +197,7 @@ class NotificationDrawer extends Component {
                     ) : (
                         <div
                             style={{
-                                display: 'flex',
+                                display: "flex",
                                 height: "100%",
                                 justifyContent: "center",
                                 alignItems: "center",
@@ -181,8 +207,6 @@ class NotificationDrawer extends Component {
                         </div>
                     )}
                 </Drawer>
-
-                <Loading isOpen={isLoading} />
             </>
         );
     }
