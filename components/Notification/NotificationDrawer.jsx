@@ -80,14 +80,31 @@ class NotificationDrawer extends Component {
         }
     }
 
-    async markAsReadNotification(ids = []) {
+    async afterMarkAsReadAll() {
+        this.setState(
+            {
+                notis: [],
+                page: 1,
+                totalPage: 5,
+                totalRecord: 0,
+                hasLoadMore: true,
+            },
+            () => {
+                this.loadNotificationList();
+            }
+        );
+    }
+
+    async markAsReadNotification(ids = [], readAll = false, onSuccess) {
         this.setState({ isLoading: true });
         try {
             let res = await markAsReadNotificationApi({
                 body: {
                     ids: ids.join(","),
+                    mark_all: readAll ? "yes" : "no",
                 },
             });
+            onSuccess && onSuccess();
         } catch (error) {
             console.log(error);
         } finally {
@@ -120,11 +137,24 @@ class NotificationDrawer extends Component {
         return (
             <>
                 <Drawer
-                    title="การแจ้งเตือน"
+                    title="แจ้งเตือน"
                     placement="right"
-                    onClose={() => onClose()}
-                    open={isOpen}
+                    extra={
+                        <span
+                            className="text-primary pointer"
+                            style={{ fontSize: 14 }}
+                            onClick={() =>
+                                this.markAsReadNotification([], true, () =>
+                                    this.afterMarkAsReadAll()
+                                )
+                            }
+                        >
+                            เปลี่ยนเป็นอ่านแล้วทั้งหมด
+                        </span>
+                    }
                     bodyStyle={{ padding: 0 }}
+                    open={isOpen}
+                    onClose={() => onClose()}
                 >
                     {totalRecord > 0 ? (
                         <>

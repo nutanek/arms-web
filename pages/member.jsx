@@ -23,6 +23,7 @@ import { IMAGE_PATH } from "./../constants/config";
 import { getMemberDetailApi } from "./../services/apiServices";
 import { getLocalUserInfo } from "./../services/appServices";
 import MainLayout from "./../components/Layout/MainLayout";
+import Loading from "./../components/Utility/Modal/Loading";
 
 const title = "";
 
@@ -59,7 +60,7 @@ class Member extends Component {
     }
 
     render() {
-        let { member, userInfo } = this.state;
+        let { isLoading, member, userInfo } = this.state;
 
         return (
             <>
@@ -193,6 +194,7 @@ class Member extends Component {
                             )}
                         </Col>
                     </Row>
+                    <Loading isOpen={isLoading} />
                 </MainLayout>
             </>
         );

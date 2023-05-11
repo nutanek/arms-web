@@ -28,6 +28,7 @@ import { IMAGE_PATH } from "./../constants/config";
 import { getJobDetailApi, requestJobApi } from "./../services/apiServices";
 import { getLocalUserInfo, isLoggedIn } from "./../services/appServices";
 import MainLayout from "./../components/Layout/MainLayout";
+import Loading from "./../components/Utility/Modal/Loading";
 
 const title = "";
 
@@ -104,7 +105,7 @@ class Job extends Component {
     }
 
     render() {
-        let { job, userInfo, isUserLoggedIn } = this.state;
+        let { isLoading, job, userInfo, isUserLoggedIn } = this.state;
 
         return (
             <>
@@ -175,7 +176,7 @@ class Job extends Component {
                                 )}
                                 <div className="fs-6 mb-2">
                                     <b>ประเภทงาน: </b>
-                                    {job.job_type}
+                                    {job.service_charge?.type || "ไม่ระบุ"}
                                 </div>
                                 <div className="fs-6">
                                     <b>ทักษะที่ต้องการ: </b>
@@ -283,6 +284,7 @@ class Job extends Component {
                             </Card>
                         </Col>
                     </Row>
+                    <Loading isOpen={isLoading} />
                 </MainLayout>
             </>
         );

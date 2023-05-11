@@ -26,6 +26,7 @@ import {
 import MainLayout from "./../../../components/Layout/MainLayout";
 import AccountLayout from "./../../../components/Layout/AccountLayout";
 import Loading from "./../../../components/Utility/Modal/Loading";
+import Link from "next/link";
 
 const title = "รายละเอียดคำขออนุมัติ";
 
@@ -150,8 +151,12 @@ class DashboardAccountDetail extends Component {
                                                 className="fs-6 fw-light"
                                             >
                                                 <b>ชื่อ: </b>
-                                                {member?.firstname}{" "}
-                                                {member?.lastname}
+                                                <Link href={`/dashboard/member/detail?id=${member.id}`}>
+                                                    <span className="text-primary">
+                                                        {member?.firstname}{" "}
+                                                        {member?.lastname}
+                                                    </span>
+                                                </Link>
                                             </Col>
                                             <Col span={12} className="text-end">
                                                 <Tag color={status.color}>

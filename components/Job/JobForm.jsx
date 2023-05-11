@@ -454,8 +454,8 @@ class JobForm extends Component {
                                     avatar={
                                         <Avatar
                                             src={
-                                                job.member?.image
-                                                    ? `${IMAGE_PATH}/${job.member?.image}`
+                                                job.employee?.image
+                                                    ? `${IMAGE_PATH}/${job.employee?.image}`
                                                     : `${assetPrefix}/images/no-avatar.png`
                                             }
                                             style={{
