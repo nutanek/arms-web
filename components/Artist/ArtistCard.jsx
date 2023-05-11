@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Row, Col, Card, Badge, Tag } from "antd";
-import { ClockCircleOutlined, StarFilled } from "@ant-design/icons";
-import moment from "moment";
+import { StarFilled } from "@ant-design/icons";
 import numeral from "numeral";
 import { assetPrefix } from "./../../next.config";
 import { IMAGE_PATH } from "./../../constants/config";
@@ -50,7 +49,11 @@ const ArtistCard = ({ item = {} }) => {
                     <Col span={12}>
                         <StarFilled style={{ color: "#ffcc00" }} />{" "}
                         <span className="text-secondary">
-                            {item.rating > 0 ? <b>{item.rating}</b> : "ยังไม่มีคะแนน"}
+                            {item.rating > 0 ? (
+                                <b>{numeral(item.rating).format("0[.]0")}</b>
+                            ) : (
+                                "ยังไม่มีคะแนน"
+                            )}
                         </span>
                     </Col>
                     <Col span={12} className="text-end">

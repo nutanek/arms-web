@@ -122,7 +122,7 @@ class Job extends Component {
                             {job.image && (
                                 <img
                                     src={`${IMAGE_PATH}/${job.image}`}
-                                    style={{ width: "100%" }}
+                                    style={{ width: "100%", borderRadius: 8 }}
                                     className="mb-2"
                                 />
                             )}
@@ -159,10 +159,6 @@ class Job extends Component {
 
                             <Card
                                 type="inner"
-                                // headStyle={{
-                                //     backgroundColor: "#389e0d",
-                                //     color: "#ffffff",
-                                // }}
                                 title={<div className="fs-6">รายละเอียด</div>}
                                 className="mb-3"
                             >
@@ -234,10 +230,6 @@ class Job extends Component {
 
                             <Card
                                 type="inner"
-                                // headStyle={{
-                                //     backgroundColor: "#389e0d",
-                                //     color: "#ffffff",
-                                // }}
                                 title={<div className="fs-6">ผู้ว่าจ้าง</div>}
                                 className="mb-3"
                             >

@@ -1,22 +1,10 @@
 import React, { Component } from "react";
 import Head from "next/head";
-import Link from "next/link";
 import Router from "next/router";
 import moment from "moment";
 import numeral from "numeral";
-import {
-    Row,
-    Col,
-    Alert,
-    Tag,
-    Card,
-    List,
-    Avatar,
-    Divider,
-    Button,
-    Modal,
-} from "antd";
-import { PhoneOutlined, MailOutlined, SendOutlined } from "@ant-design/icons";
+import { Row, Col, Tag, Card, Avatar, Divider } from "antd";
+import { PhoneOutlined, MailOutlined } from "@ant-design/icons";
 import { assetPrefix } from "./../next.config";
 import { GENDERS_MAPPING, MEMBER_TYPES } from "./../constants/appConstants";
 import { IMAGE_PATH } from "./../constants/config";
@@ -180,7 +168,11 @@ class Member extends Component {
                                             </div>
                                             <div className="text-primary">
                                                 <span className="fw-bold fs-1">
-                                                    {member.rating || "-"}
+                                                    {member.rating
+                                                        ? numeral(
+                                                              member.rating
+                                                          ).format("0[.]0")
+                                                        : "-"}
                                                 </span>
                                                 <span className="fs-5">/5</span>
                                             </div>
