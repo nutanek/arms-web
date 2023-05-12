@@ -568,10 +568,9 @@ class DashboardMemberDetail extends Component {
                                     >
                                         <Col span={6}>
                                             <Button
-                                                ghost
-                                                danger
                                                 type="primary"
                                                 size="large"
+                                                className="btn-primary"
                                                 onClick={() => this.onBack()}
                                             >
                                                 กลับ

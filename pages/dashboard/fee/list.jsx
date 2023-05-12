@@ -157,7 +157,6 @@ class DashboardFeeList extends Component {
                                                 type="primary"
                                                 size="large"
                                                 icon={<PlusOutlined />}
-                                                className="bg-success"
                                             >
                                                 เพิ่มรายการใหม่
                                             </Button>
@@ -214,6 +213,7 @@ class DashboardFeeList extends Component {
                                                     <Button
                                                         type="primary"
                                                         icon={<EditOutlined />}
+                                                        className="btn-primary"
                                                     >
                                                         แก้ไข
                                                     </Button>

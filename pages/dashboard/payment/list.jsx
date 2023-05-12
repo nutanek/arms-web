@@ -155,6 +155,7 @@ class DashboardPaymentList extends Component {
                                                 >
                                                     <Button
                                                         type="primary"
+                                                        className="btn-primary"
                                                         icon={
                                                             <FileSearchOutlined />
                                                         }

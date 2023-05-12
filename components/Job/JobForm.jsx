@@ -32,6 +32,7 @@ import { provinces } from "./../../constants/provinces";
 import {
     getSkillListApi,
     getFeeListApi,
+    getBankAccountListApi,
     getJobDetailApi,
     addJobDetailApi,
     updateJobDetailApi,
@@ -54,9 +55,13 @@ class JobForm extends Component {
         isOpenModalRating: false,
         skills: [],
         fees: [],
+        bankAccounts: [],
         job: {
             price: 0,
             service_charge: {
+                id: 0,
+            },
+            bank_account: {
                 id: 0,
             },
             employee_rating: 0,
@@ -69,6 +74,7 @@ class JobForm extends Component {
     componentDidMount() {
         this.getSkills();
         this.getFees();
+        this.getBankAccounts();
         if (this.props.id) {
             this.getJobDetail(this.props.id);
         }
@@ -94,6 +100,16 @@ class JobForm extends Component {
         } catch (error) {}
     }
 
+    async getBankAccounts() {
+        try {
+            let res = await getBankAccountListApi({
+                params: { page: 1, size: 999 },
+            });
+            let bankAccounts = res.data || [];
+            this.setState({ bankAccounts });
+        } catch (error) {}
+    }
+
     async getJobDetail(id) {
         this.setState({ isLoading: true });
         try {
@@ -108,6 +124,7 @@ class JobForm extends Component {
                 id_service_charge: job.service_charge?.id,
                 detail: job.detail,
                 price: job.price,
+                id_bank_account: job.bank_account?.id,
                 work_date: [
                     dayjs(
                         `${job.start_date} ${job.start_time}`,
@@ -310,6 +327,14 @@ class JobForm extends Component {
         this.setState({ job });
     }
 
+    onChangeBankAccount(id) {
+        let job = cloneDeep(this.state.job);
+        if (job.bank_account) {
+            job.bank_account.id = id;
+        }
+        this.setState({ job });
+    }
+
     onChangePrice(price) {
         let job = cloneDeep(this.state.job);
         job.price = price;
@@ -352,6 +377,7 @@ class JobForm extends Component {
             end_time: values.work_date[1].format("HH:mm:ss"),
             image: job.image,
             payment_image: job.payment_image,
+            id_bank_account: values.id_bank_account,
         };
         if (!job.id) {
             this.addJobDetail(data);
@@ -419,10 +445,23 @@ class JobForm extends Component {
     }
 
     render() {
-        let { isLoading, job, skills, fees, tempRating, isOpenModalRating } =
-            this.state;
+        let {
+            isLoading,
+            job,
+            skills,
+            fees,
+            bankAccounts,
+            tempRating,
+            isOpenModalRating,
+        } = this.state;
+
         let payment = this.calculatePyment(job.price, job.service_charge?.id);
         let jobStatus = JOB_STATUS[job.job_status] || {};
+        let bankAccount = bankAccounts.find(
+            (bank) => bank.id == job.bank_account?.id
+        );
+        console.log(bankAccounts);
+        console.log(job.bank_account?.id);
 
         return (
             <>
@@ -519,7 +558,7 @@ class JobForm extends Component {
                                 <Button
                                     type="primary"
                                     size="large"
-                                    className="ms-2 bg-success"
+                                    className="ms-2"
                                     onClick={() =>
                                         this.confirmFinishJob(job.id)
                                     }
@@ -787,7 +826,7 @@ class JobForm extends Component {
                                 bordered
                             >
                                 <Row justify="space-between">
-                                    <Col lg={10}>
+                                    <Col xs={24} lg={10}>
                                         <div className="fs-5 fw-bold">
                                             ยอดชำระ:{" "}
                                             <span className="text-success">
@@ -816,8 +855,68 @@ class JobForm extends Component {
                                             จะไม่สามารถรับค่าธรรมเนียมคืนได้
                                         </div>
                                     </Col>
-                                    <Col xs={24} lg={10}>
+                                    <Col xs={24} lg={12}>
                                         <Card>
+                                            <Form.Item
+                                                label={
+                                                    <div className="fs-6 fw-bold">
+                                                        ธนาคารปลายทาง
+                                                    </div>
+                                                }
+                                                name="id_bank_account"
+                                                rules={[
+                                                    {
+                                                        required: true,
+                                                        message:
+                                                            "โปรดระบุ ธนาคารปลายทาง",
+                                                    },
+                                                ]}
+                                            >
+                                                <Select
+                                                    placeholder="โปรดเลือกธนาคารปลายทาง"
+                                                    size="large"
+                                                    onChange={this.onChangeBankAccount.bind(
+                                                        this
+                                                    )}
+                                                >
+                                                    {bankAccounts.map(
+                                                        (item) => (
+                                                            <Option
+                                                                key={item.id}
+                                                                value={item.id}
+                                                            >
+                                                                {item.bank_name}
+                                                            </Option>
+                                                        )
+                                                    )}
+                                                </Select>
+                                            </Form.Item>
+                                            {!!job.bank_account?.id && (
+                                                <Card
+                                                    className="mb-3 fs-6"
+                                                    style={{
+                                                        borderColor: "#0d6efd",
+                                                    }}
+                                                >
+                                                    <div className="mb-1">
+                                                        <b>ธนาคาร: </b>
+                                                        {bankAccount?.bank_name}
+                                                    </div>
+                                                    <div className="mb-1">
+                                                        <b>เลขบัญชี: </b>
+                                                        {
+                                                            bankAccount?.account_number
+                                                        }
+                                                    </div>
+                                                    <div>
+                                                        <b>ชื่่อบัญชี: </b>
+                                                        {
+                                                            bankAccount?.account_name
+                                                        }
+                                                    </div>
+                                                </Card>
+                                            )}
+
                                             <Form.Item
                                                 label={
                                                     <div className="fs-6 fw-bold">
@@ -869,10 +968,9 @@ class JobForm extends Component {
                     <Row justify="space-between" className="pt-4">
                         <Col span={6}>
                             <Button
-                                ghost
-                                danger
                                 type="primary"
                                 size="large"
+                                className="btn-primary"
                                 onClick={() => this.onBack()}
                             >
                                 กลับ

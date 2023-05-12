@@ -56,6 +56,7 @@ export default function App({ Component, pageProps }) {
             theme={{
                 token: {
                     fontFamily: "'Kanit', sans-serif",
+                    colorPrimary: '#198754'
                 },
             }}
         >

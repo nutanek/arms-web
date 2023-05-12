@@ -202,6 +202,7 @@ class DashboardJobRequestList extends Component {
                                                 >
                                                     <Button
                                                         type="primary"
+                                                        className="btn-primary"
                                                         icon={
                                                             <FileSearchOutlined />
                                                         }

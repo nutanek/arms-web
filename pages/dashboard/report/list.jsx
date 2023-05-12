@@ -114,7 +114,7 @@ class DashboardReportList extends Component {
                                 <Row justify="space-between" className="pt-3">
                                     <Col xs={12} lg={8}>
                                         <Input.Search
-                                            placeholder="ค้นหาหัวข้อ และชื่อผู้รายงาน"
+                                            placeholder="ค้นหาหัวข้อ"
                                             allowClear
                                             size="large"
                                             value={keyword}
@@ -132,7 +132,6 @@ class DashboardReportList extends Component {
                                                 type="primary"
                                                 size="large"
                                                 icon={<PlusOutlined />}
-                                                className="bg-success"
                                             >
                                                 รายงานปัญหา
                                             </Button>
@@ -154,11 +153,17 @@ class DashboardReportList extends Component {
                                     x: 700,
                                 }}
                                 columns={[
+                                    
+                                    {
+                                        title: "ประเภทปัญหา",
+                                        dataIndex: "type",
+                                        key: "type",
+                                        className: "fs-6",
+                                    },
                                     {
                                         title: "หัวข้อ",
                                         dataIndex: "title",
                                         key: "title",
-
                                         className: " fs-6",
                                     },
                                     {
@@ -175,15 +180,7 @@ class DashboardReportList extends Component {
                                             </span>
                                         ),
                                     },
-                                    {
-                                        title: "ผู้รายงาน",
-                                        dataIndex: "name",
-                                        key: "name",
-                                        align: "center",
-                                        className: "fs-6",
-                                        render: (value, record) =>
-                                            `${record.member?.firstname} ${record.member?.lastname}`,
-                                    },
+
                                     {
                                         title: (
                                             <>
@@ -231,6 +228,7 @@ class DashboardReportList extends Component {
                                                 >
                                                     <Button
                                                         type="primary"
+                                                        className="btn-primary"
                                                         icon={
                                                             <FileSearchOutlined />
                                                         }

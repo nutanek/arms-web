@@ -40,6 +40,12 @@ const FEE_DETAIL_ADD = `${API_URL_V1}/fee-detail-add.php`;
 const FEE_DETAIL_UPDATE = `${API_URL_V1}/fee-detail-update.php?id=:id`;
 const FEE_DETAIL_REMOVE = `${API_URL_V1}/fee-detail-remove.php?id=:id`;
 
+const BANK_ACCOUNT_LIST = `${API_URL_V1}/bank-account-list.php?page=:page&size=:size`;
+const BANK_ACCOUNT_DETAIL = `${API_URL_V1}/bank-account-detail.php?id=:id`;
+const BANK_ACCOUNT_DETAIL_ADD = `${API_URL_V1}/bank-account-detail-add.php`;
+const BANK_ACCOUNT_DETAIL_UPDATE = `${API_URL_V1}/bank-account-detail-update.php?id=:id`;
+const BANK_ACCOUNT_DETAIL_REMOVE = `${API_URL_V1}/bank-account-detail-remove.php?id=:id`;
+
 const NOTIFICATION_LIST = `${API_URL_V1}/notification-list.php?page=:page&size=:size`;
 const NOTIFICATION_MARK_AS_READ = `${API_URL_V1}/notification-mark-as-read.php`;
 
@@ -249,6 +255,41 @@ export const removeFeeDetailApi = async (props) =>
     callApi({
         ...props,
         url: FEE_DETAIL_REMOVE,
+        method: "POST",
+    });
+
+export const getBankAccountListApi = async (props) =>
+    callApi({
+        ...props,
+        url: BANK_ACCOUNT_LIST,
+        method: "GET",
+    });
+
+export const getBankAccountDetailApi = async (props) =>
+    callApi({
+        ...props,
+        url: BANK_ACCOUNT_DETAIL,
+        method: "GET",
+    });
+
+export const addBankAccountDetailApi = async (props) =>
+    callApi({
+        ...props,
+        url: BANK_ACCOUNT_DETAIL_ADD,
+        method: "POST",
+    });
+
+export const updateBankAccountDetailApi = async (props) =>
+    callApi({
+        ...props,
+        url: BANK_ACCOUNT_DETAIL_UPDATE,
+        method: "POST",
+    });
+
+export const removeBankAccountDetailApi = async (props) =>
+    callApi({
+        ...props,
+        url: BANK_ACCOUNT_DETAIL_REMOVE,
         method: "POST",
     });
 

@@ -6,14 +6,9 @@ import {
     Col,
     Form,
     Input,
-    DatePicker,
     Select,
     Button,
     Modal,
-    Divider,
-    Upload,
-    Card,
-    message,
     InputNumber,
 } from "antd";
 import dayjs from "dayjs";
@@ -40,7 +35,6 @@ class DashboardFeeDetail extends Component {
     state = {
         isLoadng: false,
         isSubmitted: false,
-        skills: [],
         action: "",
         fee: {},
         title,
@@ -49,7 +43,6 @@ class DashboardFeeDetail extends Component {
     formRef = React.createRef();
 
     componentDidMount() {
-        this.getSkills();
         setTimeout(() => {
             let query = Router.query;
             this.setState(
@@ -57,8 +50,8 @@ class DashboardFeeDetail extends Component {
                     action: query.action === "add" ? "add" : "edit",
                     title:
                         query.action == "add"
-                            ? "เพิ่มข้อมูลสมาชิกใหม่"
-                            : "แก้ไขข้อมูลสมาชิก",
+                            ? "เพิ่มค่าธรรมเนียมใหม่"
+                            : "แก้ไขค่าธรรมเนียม",
                 },
                 () => {
                     if (query.id) {
@@ -69,19 +62,6 @@ class DashboardFeeDetail extends Component {
                 }
             );
         }, 300);
-    }
-
-    async getSkills() {
-        this.setState({ isLoading: true });
-        try {
-            let skills = await getSkillListApi();
-            this.setState({ skills });
-        } catch (error) {
-        } finally {
-            setTimeout(() => {
-                this.setState({ isLoading: false });
-            }, 300);
-        }
     }
 
     async getFeeDetail(id) {
@@ -184,42 +164,6 @@ class DashboardFeeDetail extends Component {
         await Router.back();
     }
 
-    async uploadImage(file, onSuccess) {
-        try {
-            this.setState({ isLoading: true });
-            let { image } = await uploadImageApi({
-                body: {
-                    file,
-                    width: 450,
-                    height: 450,
-                },
-            });
-            this.setState({
-                isLoading: false,
-            });
-            onSuccess && onSuccess(image);
-        } catch (error) {
-            message.error(error?.message);
-            this.setState({ isLoading: false });
-        }
-    }
-
-    onChangeImage(info) {
-        if (info.file.status !== "uploading") {
-            console.log(info.fileList[0]);
-            this.uploadImage(info.fileList[0].originFileObj, (image) => {
-                let fee = cloneDeep(this.state.fee);
-                fee.image = image;
-                this.setState({ fee });
-            });
-        }
-        if (info.file.status === "done") {
-            message.success(`${info.file.name} file uploaded successfully`);
-        } else if (info.file.status === "error") {
-            message.error(`${info.file.name} file upload failed.`);
-        }
-    }
-
     render() {
         let { isLoading, title } = this.state;
 
@@ -318,10 +262,9 @@ class DashboardFeeDetail extends Component {
                                     >
                                         <Col span={6}>
                                             <Button
-                                                ghost
-                                                danger
                                                 type="primary"
                                                 size="large"
+                                                className="btn-primary"
                                                 onClick={() => this.onBack()}
                                             >
                                                 กลับ

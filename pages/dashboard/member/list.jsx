@@ -156,7 +156,6 @@ class DashboardMemberList extends Component {
                                                 type="primary"
                                                 size="large"
                                                 icon={<PlusOutlined />}
-                                                className="bg-success"
                                             >
                                                 เพิ่มสมาชิกใหม่
                                             </Button>
@@ -241,6 +240,7 @@ class DashboardMemberList extends Component {
                                                     <Button
                                                         type="primary"
                                                         icon={<EditOutlined />}
+                                                        className="btn-primary"
                                                     >
                                                         แก้ไข
                                                     </Button>

@@ -8,33 +8,32 @@ import {
     Input,
     Table,
     Button,
+    Popconfirm,
     Modal,
     Card,
     Tag,
-    Tooltip,
     message,
 } from "antd";
-import {
-    PlusOutlined,
-    EditOutlined,
-    QuestionCircleOutlined,
-} from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import moment from "moment";
-import { JOB_STATUS } from "./../../../constants/appConstants";
-import { getJobListApi } from "./../../../services/apiServices";
-import { getLocalUserInfo } from "./../../../services/appServices";
+import numeral from "numeral";
+import { ACCOUNT_APPROVE_STATUS } from "./../../../constants/appConstants";
+import {
+    getBankAccountListApi,
+    removeBankAccountDetailApi,
+} from "./../../../services/apiServices";
 import MainLayout from "./../../../components/Layout/MainLayout";
 import AccountLayout from "./../../../components/Layout/AccountLayout";
 import Loading from "./../../../components/Utility/Modal/Loading";
 
-const title = "งานที่ประกาศ";
+const title = "บัญชีธนาคาร";
 
 const pageSize = 10;
 
-class DashboardJobList extends Component {
+class DashboardBankAccountList extends Component {
     state = {
         isLoading: false,
-        jobs: [],
+        bankAccounts: [],
         page: 1,
         totalPage: 5,
         keyword: "",
@@ -48,28 +47,26 @@ class DashboardJobList extends Component {
                     page,
                     keyword,
                 },
-                () => this.getJobList()
+                () => this.getBankAccountList()
             );
         }, 300);
     }
 
-    async getJobList() {
-        let userInfo = getLocalUserInfo();
+    async getBankAccountList() {
         this.setState({ isLoading: true });
         try {
-            let res = await getJobListApi({
+            let res = await getBankAccountListApi({
                 params: {
                     page: this.state.page,
                     size: pageSize,
                     keyword: this.state.keyword,
-                    id_employer:
-                        userInfo.member_type === "admin" ? 0 : userInfo.id,
-                    id_employee: 0,
-                    status: 0,
+                    request_account: "no",
+                    approved_status: 0,
+                    fee_type: "all",
                 },
             });
             this.setState({
-                jobs: res.data,
+                bankAccounts: res.data,
                 page: res.page,
                 totalPage: res.total_page,
             });
@@ -81,19 +78,44 @@ class DashboardJobList extends Component {
         }
     }
 
+    async removeBankAccountList(id) {
+        this.setState({ isLoading: true });
+        try {
+            let res = await removeBankAccountDetailApi({
+                params: { id },
+            });
+            message.success(res?.message);
+            this.getBankAccountList();
+        } catch (error) {
+            Modal.error({
+                title: "ไม่สำเร็จ",
+                content: error?.message,
+                centered: true,
+                maskClosable: true,
+                okText: "ตกลง",
+            });
+        } finally {
+            setTimeout(() => {
+                this.setState({ isLoading: false });
+            }, 300);
+        }
+    }
+
     async onChangePage(page) {
         await Router.push(
-            `/dashboard/job/list?page=${page}&keyword=${this.state.keyword}`
+            `/dashboard/bank-account/list?page=${page}&keyword=${this.state.keyword}`
         );
         this.setState({ page }, () => {
-            this.getJobList();
+            this.getBankAccountList();
         });
     }
 
     async onSearch(keyword = "") {
-        await Router.push(`/dashboard/job/list?page=1&keyword=${keyword}`);
+        await Router.push(
+            `/dashboard/bank-account/list?page=1&keyword=${keyword}`
+        );
         this.setState({ keyword, page: 1 }, () => {
-            this.getJobList();
+            this.getBankAccountList();
         });
     }
 
@@ -102,7 +124,7 @@ class DashboardJobList extends Component {
     }
 
     render() {
-        let { isLoading, jobs, page, totalPage, keyword } = this.state;
+        let { isLoading, bankAccounts, page, totalPage, keyword } = this.state;
         return (
             <>
                 <Head>
@@ -115,30 +137,17 @@ class DashboardJobList extends Component {
                             type="inner"
                             title={
                                 <Row justify="space-between" className="pt-3">
-                                    <Col xs={12} lg={8}>
-                                        <Input.Search
-                                            placeholder="ค้นหาหัวข้อ"
-                                            allowClear
-                                            size="large"
-                                            value={keyword}
-                                            onChange={(e) =>
-                                                this.onChangeKeyword(
-                                                    e.target.value
-                                                )
-                                            }
-                                            onSearch={this.onSearch.bind(this)}
-                                        />
-                                    </Col>
+                                    <Col xs={12} lg={8}></Col>
                                     <Col span={12} className="pb-3 text-end">
                                         <Link
-                                            href={`/dashboard/job/detail?action=add`}
+                                            href={`/dashboard/bank-account/detail?action=add`}
                                         >
                                             <Button
                                                 type="primary"
                                                 size="large"
                                                 icon={<PlusOutlined />}
                                             >
-                                                ประกาศจ้างงาน
+                                                เพิ่มบัญชีใหม่
                                             </Button>
                                         </Link>
                                     </Col>
@@ -146,7 +155,7 @@ class DashboardJobList extends Component {
                             }
                         >
                             <Table
-                                dataSource={jobs}
+                                dataSource={bankAccounts}
                                 pagination={{
                                     current: page,
                                     pageSize: pageSize,
@@ -159,64 +168,24 @@ class DashboardJobList extends Component {
                                 }}
                                 columns={[
                                     {
-                                        title: "หัวข้อ",
-                                        dataIndex: "title",
-                                        key: "title",
-                                        className: " fs-6",
+                                        title: "ธนาคาร",
+                                        dataIndex: "bank_name",
+                                        key: "bank_name",
+                                        className: "fs-6",
                                     },
                                     {
-                                        title: "วันที่ทำงาน",
-                                        dataIndex: "work_date",
-                                        key: "work_date",
-                                        align: "center",
+                                        title: "เลขบัญชี",
+                                        dataIndex: "account_number",
+                                        key: "account_number",
                                         className: "fs-6",
-                                        render: (value, record) => (
-                                            <span>
-                                                {moment(
-                                                    `${record.start_date} ${record.start_time}`
-                                                ).format("DD/MM/YYYY HH:mm")}
-                                            </span>
-                                        ),
+                                        align: "center",
                                     },
                                     {
-                                        title: "ผู้ลงประกาศ",
-                                        dataIndex: "name",
-                                        key: "name",
-                                        align: "center",
+                                        title: "ชื่อบัญชี",
+                                        dataIndex: "account_name",
+                                        key: "account_name",
                                         className: "fs-6",
-                                        render: (value, record) =>
-                                            `${record.member?.firstname} ${record.member?.lastname}`,
-                                    },
-                                    {
-                                        title: (
-                                            <>
-                                                สถานะ{" "}
-                                                <Tooltip
-                                                    title={`สถานะทั้งหมด: ${Object.values(
-                                                        JOB_STATUS
-                                                    )
-                                                        .map(
-                                                            (item) => item.name
-                                                        )
-                                                        .join(", ")}`}
-                                                >
-                                                    <QuestionCircleOutlined />
-                                                </Tooltip>
-                                            </>
-                                        ),
-                                        dataIndex: "job_status",
-                                        key: "job_status",
                                         align: "center",
-                                        className: "fs-6",
-                                        render: (value) => {
-                                            let status =
-                                                JOB_STATUS[value] || {};
-                                            return (
-                                                <Tag color={status.color}>
-                                                    {status.name}
-                                                </Tag>
-                                            );
-                                        },
                                     },
                                     {
                                         title: "",
@@ -230,7 +199,7 @@ class DashboardJobList extends Component {
                                                 }}
                                             >
                                                 <Link
-                                                    href={`/dashboard/job/detail?id=${record.id}`}
+                                                    href={`/dashboard/bank-account/detail?id=${record.id}`}
                                                 >
                                                     <Button
                                                         type="primary"
@@ -240,6 +209,32 @@ class DashboardJobList extends Component {
                                                         แก้ไข
                                                     </Button>
                                                 </Link>
+
+                                                <Popconfirm
+                                                    title={
+                                                        "คุณต้องการลบบัญชีธนาคารนี้ใช่ไหม?"
+                                                    }
+                                                    onConfirm={() =>
+                                                        this.removeBankAccountList(
+                                                            record.id
+                                                        )
+                                                    }
+                                                    okText={"ยืนยัน"}
+                                                    cancelText={"ยกเลิก"}
+                                                >
+                                                    <Button
+                                                        style={{
+                                                            marginLeft: 10,
+                                                        }}
+                                                        danger
+                                                        type="primary"
+                                                        icon={
+                                                            <DeleteOutlined />
+                                                        }
+                                                    >
+                                                        ลบ
+                                                    </Button>
+                                                </Popconfirm>
                                             </div>
                                         ),
                                     },
@@ -255,4 +250,4 @@ class DashboardJobList extends Component {
     }
 }
 
-export default DashboardJobList;
+export default DashboardBankAccountList;

@@ -197,6 +197,26 @@ class DashboardPaymentDetail extends Component {
                                             </div>
 
                                             <Divider />
+                                            
+
+                                            <div className="fs-6">
+                                                <b>ธนาคารปลายทาง: </b>
+                                                {job.bank_account?.bank_name ||
+                                                    "-"}
+                                            </div>
+                                            <div className="fs-6">
+                                                <b>เลขบัญชี: </b>
+                                                {job.bank_account
+                                                    ?.account_number || "-"}
+                                            </div>
+                                            <div className="fs-6">
+                                                <b>ชื่อบัญชี: </b>
+                                                {job.bank_account
+                                                    ?.account_name || "-"}
+                                            </div>
+
+                                            <Divider />
+
                                             <div className="fs-6">
                                                 <b>หัวข้อ: </b>
                                                 <Link
@@ -251,10 +271,9 @@ class DashboardPaymentDetail extends Component {
                                 <Row justify="space-between" className="pt-3">
                                     <Col span={6}>
                                         <Button
-                                            ghost
-                                            danger
                                             type="primary"
                                             size="large"
+                                            className="btn-primary"
                                             onClick={() => this.onBack()}
                                         >
                                             กลับ

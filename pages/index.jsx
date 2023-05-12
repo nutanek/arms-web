@@ -81,7 +81,7 @@ class Home extends Component {
         return (
             <>
                 <Head>
-                    <title>{title}</title>
+                    <title>ARMS - {title}</title>
                     <meta name="description" content={title} />
                 </Head>
                 <MainLayout>
@@ -118,6 +118,12 @@ class Home extends Component {
                                 width={200}
                                 alt="logo"
                             />
+                        </div>
+                        <div
+                            className="fs-5 text-white"
+                            style={{ opacity: 0.5 }}
+                        >
+                            Artist Record Management System
                         </div>
                         <h1 className="page-title fs-1 text-center fw-bold text-white mt-0 mb-4">
                             {title}

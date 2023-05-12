@@ -1,27 +1,91 @@
 import React, { Component } from "react";
 import Head from "next/head";
 import Router from "next/router";
-import { Row, Col, Form, Input, Select, Button, Modal } from "antd";
-import { addReportDetailApi } from "./../../../services/apiServices";
+import {
+    Row,
+    Col,
+    Form,
+    Input,
+    Select,
+    Button,
+    Modal,
+    InputNumber,
+} from "antd";
+import dayjs from "dayjs";
+import cloneDeep from "lodash/cloneDeep";
+import { assetPrefix } from "./../../../next.config";
+import { BANKS } from "./../../../constants/appConstants";
+import { IMAGE_PATH } from "./../../../constants/config";
+import {
+    getSkillListApi,
+    getBankAccountDetailApi,
+    addBankAccountDetailApi,
+    updateBankAccountDetailApi,
+    uploadImageApi,
+} from "./../../../services/apiServices";
 import MainLayout from "./../../../components/Layout/MainLayout";
 import AccountLayout from "./../../../components/Layout/AccountLayout";
 import Loading from "./../../../components/Utility/Modal/Loading";
-import { REPORT_TYPES } from "@/constants/appConstants";
 
-const title = "รายงานปัญหา";
+const { Option } = Select;
 
-class DashboardReportAdd extends Component {
+let title = "บัญชีธนาคาร";
+
+class DashboardBankAccountDetail extends Component {
     state = {
         isLoadng: false,
         isSubmitted: false,
+        action: "",
+        bankAccount: {},
+        title,
     };
 
     formRef = React.createRef();
 
-    async addReportDetail(data) {
+    componentDidMount() {
+        setTimeout(() => {
+            let query = Router.query;
+            this.setState(
+                {
+                    action: query.action === "add" ? "add" : "edit",
+                    title:
+                        query.action == "add"
+                            ? "เพิ่มบัญชีธนาคารใหม่"
+                            : "แก้ไขบัญชีธนาคาร",
+                },
+                () => {
+                    if (query.id) {
+                        this.getBankAccountDetail(query.id);
+                    } else {
+                        this.formRef.current.resetFields();
+                    }
+                }
+            );
+        }, 300);
+    }
+
+    async getBankAccountDetail(id) {
         this.setState({ isLoading: true });
         try {
-            let res = await addReportDetailApi({ body: data });
+            let bankAccount = await getBankAccountDetailApi({ params: { id } });
+            this.setState({ bankAccount });
+            this.formRef.current?.setFieldsValue({
+                bank_name: bankAccount.bank_name,
+                account_number: bankAccount.account_number,
+                account_name: bankAccount.account_name,
+            });
+        } catch (error) {
+        } finally {
+            setTimeout(() => {
+                this.setState({ isLoading: false });
+            }, 300);
+        }
+    }
+
+    async addBankAccountDetail(data) {
+        this.setState({ isLoading: true });
+        try {
+            let res = await addBankAccountDetailApi({ body: data });
             Modal.success({
                 title: "สำเร็จ",
                 content: res.message,
@@ -30,7 +94,40 @@ class DashboardReportAdd extends Component {
                 okText: "ตกลง",
                 afterClose: () => {
                     this.formRef.current.resetFields();
-                    this.setState({ member: {} });
+                    this.setState({ bankAccount: {} });
+                },
+            });
+        } catch (error) {
+            Modal.error({
+                title: "ไม่สำเร็จ",
+                content: error?.message,
+                centered: true,
+                maskClosable: true,
+                okText: "ตกลง",
+            });
+        } finally {
+            setTimeout(() => {
+                this.setState({ isLoading: false });
+            }, 300);
+        }
+    }
+
+    async updateBankAccountDetail(data) {
+        let { bankAccount } = this.state;
+        this.setState({ isLoading: true });
+        try {
+            let res = await updateBankAccountDetailApi({
+                params: { id: bankAccount.id },
+                body: data,
+            });
+            Modal.success({
+                title: "สำเร็จ",
+                content: res.message,
+                centered: true,
+                maskClosable: true,
+                okText: "ตกลง",
+                afterClose: () => {
+                    this.getBankAccountDetail(bankAccount.id);
                 },
             });
         } catch (error) {
@@ -49,13 +146,18 @@ class DashboardReportAdd extends Component {
     }
 
     onSubmit(values = {}) {
+        let { action } = this.state;
         let data = {
-            type: values.type,
-            title: values.title,
-            detail: values.detail,
+            bank_name: values.bank_name,
+            account_number: values.account_number,
+            account_name: values.account_name,
         };
 
-        this.addReportDetail(data);
+        if (action === "add") {
+            this.addBankAccountDetail(data);
+        } else if (action === "edit") {
+            this.updateBankAccountDetail(data);
+        }
     }
 
     async onBack() {
@@ -63,7 +165,7 @@ class DashboardReportAdd extends Component {
     }
 
     render() {
-        let { isLoading } = this.state;
+        let { isLoading, title } = this.state;
 
         return (
             <>
@@ -86,81 +188,74 @@ class DashboardReportAdd extends Component {
                                     }
                                     autoComplete="off"
                                 >
-                                    <Row gutter={15}>
+                                    <Row gutter={15} className="pb-3">
                                         <Col span={24}>
                                             <Form.Item
                                                 label={
                                                     <div className="fs-6">
-                                                        ประเภทปัญหา
+                                                        ธนาคาร
                                                     </div>
                                                 }
-                                                name="type"
+                                                name="bank_name"
                                                 rules={[
                                                     {
                                                         required: true,
                                                         message:
-                                                            "โปรดระบุ ประเภทปัญหา",
+                                                            "โปรดระบุ ธนาคาร",
                                                     },
                                                 ]}
                                             >
                                                 <Select
-                                                    placeholder="โปรดเลือกประเภทปัญหา"
+                                                    placeholder="โปรดเลือกธนาคาร"
                                                     size="large"
                                                 >
-                                                    {REPORT_TYPES.map(
-                                                        (item) => (
-                                                            <Option
-                                                                key={item.id}
-                                                                value={
-                                                                    item.name
-                                                                }
-                                                            >
-                                                                {item.name}
-                                                            </Option>
-                                                        )
-                                                    )}
+                                                    {BANKS.map((item) => (
+                                                        <Option
+                                                            key={item.key}
+                                                            value={item.name}
+                                                        >
+                                                            {item.name}
+                                                        </Option>
+                                                    ))}
                                                 </Select>
                                             </Form.Item>
                                         </Col>
-                                        <Col span={24}>
+                                        <Col span={12}>
                                             <Form.Item
                                                 label={
                                                     <div className="fs-6">
-                                                        หัวข้อ
+                                                        เลขบัญชี
                                                     </div>
                                                 }
-                                                name="title"
+                                                name="account_number"
                                                 rules={[
                                                     {
                                                         required: true,
                                                         message:
-                                                            "โปรดระบุ หัวข้อ",
+                                                            "โปรดระบุ เลขบัญชี",
                                                     },
                                                 ]}
                                             >
                                                 <Input size="large" />
                                             </Form.Item>
                                         </Col>
-                                        <Col span={24}>
+                                        <Col span={12}>
                                             <Form.Item
                                                 label={
                                                     <div className="fs-6">
-                                                        รายละเอียด
+                                                        ชื่อบัญชี
                                                     </div>
                                                 }
-                                                name="detail"
+                                                name="account_name"
                                                 rules={[
                                                     {
                                                         required: true,
                                                         message:
-                                                            "โปรดระบุ รายละเอียด",
+                                                            "โปรดระบุ ชื่อบัญชี",
                                                     },
                                                 ]}
                                             >
-                                                <Input.TextArea
-                                                    rows={5}
-                                                    size="large"
-                                                ></Input.TextArea>
+                                                <Input size="large" />
                                             </Form.Item>
                                         </Col>
                                     </Row>
@@ -186,7 +281,7 @@ class DashboardReportAdd extends Component {
                                                     type="primary"
                                                     size="large"
                                                 >
-                                                    รายงาน
+                                                    บันทึกข้อมูล
                                                 </Button>
                                             </div>
                                         </Col>
@@ -196,11 +291,10 @@ class DashboardReportAdd extends Component {
                         </Row>
                     </AccountLayout>
                 </MainLayout>
-
                 <Loading isOpen={isLoading} />
             </>
         );
     }
 }
 
-export default DashboardReportAdd;
+export default DashboardBankAccountDetail;

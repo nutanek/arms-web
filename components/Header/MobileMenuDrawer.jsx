@@ -17,7 +17,7 @@ const data = ({ userId }) => [
         title: "หางาน",
         hideOnAuth: false,
         needAuth: false,
-        link: `/`,
+        link: `/jobs`,
     },
     {
         title: "จ้างงาน",

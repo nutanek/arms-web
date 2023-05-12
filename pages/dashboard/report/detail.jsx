@@ -6,7 +6,7 @@ import {
     Col,
     Button,
     Modal,
-    Popconfirm,
+    Alert,
     Tag,
     Card,
     message,
@@ -122,37 +122,16 @@ class DashboardReportDetail extends Component {
     confirmRejectRequestJob() {
         this.toggleCommentModal(true);
         this.setState({ selectedStatus: 4 });
-        // Modal.confirm({
-        //     title: "ท่านยืนยันที่จะยกเลิกการรายงานนี้ใช่ไหม?",
-        //     okText: "ยืนยัน",
-        //     cancelText: "ยกเลิก",
-        //     centered: true,
-        //     onOk: () => this.updateReportStatus(reportId, 4),
-        // });
     }
 
     confirmApproveRequestJob() {
         this.toggleCommentModal(true);
         this.setState({ selectedStatus: 2 });
-        // Modal.confirm({
-        //     title: "ท่านยืนยันที่จะดำเนินการแก้ปัญหานี้ใช่ไหม?",
-        //     okText: "ยืนยัน",
-        //     cancelText: "ยกเลิก",
-        //     centered: true,
-        //     onOk: () => this.updateReportStatus(reportId, 2),
-        // });
     }
 
     confirmAFinishRequestJob() {
         this.toggleCommentModal(true);
         this.setState({ selectedStatus: 3 });
-        // Modal.confirm({
-        //     title: "ท่านยืนยันที่จะเสร็จสิ้นการแก้ปัญหานี้ใช่ไหม?",
-        //     okText: "ยืนยัน",
-        //     cancelText: "ยกเลิก",
-        //     centered: true,
-        //     onOk: () => this.updateReportStatus(reportId, 3),
-        // });
     }
 
     render() {
@@ -196,6 +175,15 @@ class DashboardReportDetail extends Component {
                                         </Row>
                                     }
                                 >
+                                    <Alert
+                                        description={
+                                            <>
+                                                <b>ประเภทปัญหา: </b>
+                                                {report.type}
+                                            </>
+                                        }
+                                        className="fs-6 mb-3 p-3"
+                                    />
                                     <div className="fs-5 fw-bold">
                                         {report.title}
                                     </div>
@@ -226,10 +214,9 @@ class DashboardReportDetail extends Component {
                                 <Row justify="space-between" className="pt-3">
                                     <Col span={6}>
                                         <Button
-                                            ghost
-                                            danger
                                             type="primary"
                                             size="large"
+                                            className="btn-primary"
                                             onClick={() => this.onBack()}
                                         >
                                             กลับ
@@ -279,7 +266,7 @@ class DashboardReportDetail extends Component {
                                                     <Button
                                                         type="primary"
                                                         size="large"
-                                                        className="ms-2 bg-success"
+                                                        className="ms-2"
                                                         onClick={() =>
                                                             this.confirmAFinishRequestJob(
                                                                 report.id

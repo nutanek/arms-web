@@ -8,6 +8,7 @@ import {
     RedEnvelopeOutlined,
     NotificationOutlined,
     PayCircleOutlined,
+    CreditCardOutlined,
     PushpinOutlined,
     AlertOutlined,
     LogoutOutlined,
@@ -35,6 +36,7 @@ const PATH_ACTIVE = {
     jobEmployee: ["/dashboard/job/request-list"],
     fee: ["/dashboard/fee/list", "/dashboard/fee/detail"],
     report: ["/dashboard/report/list", "/dashboard/report/detail"],
+    bankAccount: ["/dashboard/bank-account/list", "/dashboard/bank-account/detail"],
 };
 
 const AccountSidebar = (props) => {
@@ -194,6 +196,22 @@ const AccountSidebar = (props) => {
                                     <PushpinOutlined />
                                 </div>
                                 <div className="text">งานที่รับจ้าง</div>
+                            </div>
+                        </Link>
+                    )}
+                    {["admin"].includes(user.member_type) && (
+                        <Link href={`/dashboard/bank-account/list`}>
+                            <div
+                                className={`menu-item pointer ${
+                                    PATH_ACTIVE.bankAccount.includes(currentRoute)
+                                        ? "active"
+                                        : ""
+                                }`}
+                            >
+                                <div className="icon">
+                                    <CreditCardOutlined />
+                                </div>
+                                <div className="text">บัญชีธนาคาร</div>
                             </div>
                         </Link>
                     )}

@@ -199,10 +199,9 @@ class DashboardAccountDetail extends Component {
                                 <Row justify="space-between" className="pt-3">
                                     <Col span={6}>
                                         <Button
-                                            ghost
-                                            danger
                                             type="primary"
                                             size="large"
+                                            className="btn-primary"
                                             onClick={() => this.onBack()}
                                         >
                                             กลับ
@@ -229,7 +228,7 @@ class DashboardAccountDetail extends Component {
                                                 <Button
                                                     type="primary"
                                                     size="large"
-                                                    className="ms-2 bg-success"
+                                                    className="ms-2"
                                                     onClick={() =>
                                                         this.confirmApproveRequestJob(
                                                             member.id
