@@ -218,14 +218,16 @@ class NotificationDrawer extends Component {
                         selectedCategory == "" ? (
                             <CloseOutlined />
                         ) : (
-                            <LeftOutlined />
+                            <LeftOutlined
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    this.setState({ selectedCategory: "" });
+                                }}
+                            />
                         )
                     }
-                    onClose={() =>
-                        selectedCategory == ""
-                            ? onClose()
-                            : this.setState({ selectedCategory: "" })
-                    }
+                    onClose={() => onClose()}
                     placement="right"
                     extra={
                         selectedCategory == "" ? (
