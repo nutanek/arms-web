@@ -8,6 +8,8 @@ import AccountLayout from "./../../../components/Layout/AccountLayout";
 import Loading from "./../../../components/Utility/Modal/Loading";
 import { REPORT_TYPES } from "@/constants/appConstants";
 
+const { Option } = Select;
+
 const title = "รายงานปัญหา";
 
 class DashboardReportAdd extends Component {

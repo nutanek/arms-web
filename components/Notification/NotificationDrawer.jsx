@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import Router from "next/router";
-import { Drawer, List, Button, Empty } from "antd";
+import { Drawer, List, Button, Empty, Badge, message } from "antd";
 import {
     ReloadOutlined,
     ClockCircleOutlined,
@@ -9,15 +9,53 @@ import {
     BellTwoTone,
     WarningTwoTone,
     SyncOutlined,
+    RightOutlined,
+    LeftOutlined,
+    CloseOutlined,
+    ContactsTwoTone,
+    NotificationTwoTone,
+    ToolTwoTone,
+    ProfileTwoTone,
 } from "@ant-design/icons";
 import { assetPrefix } from "./../../next.config";
 import {
+    getNotificationCountApi,
     getNotificationListApi,
     markAsReadNotificationApi,
 } from "./../../services/apiServices";
 import { getTimeFromNow } from "./../../services/appServices";
 
 const pageSize = 10;
+
+const NOTI_CATEGORY_NAME = {
+    account: "บัญชี",
+    job: "จ้างงาน/หางาน",
+    report: "รายงานปัญหา",
+    etc: "อื่นๆ",
+};
+
+const NOTI_CATEGORY = [
+    {
+        key: "account",
+        name: NOTI_CATEGORY_NAME.account,
+        icon: <ContactsTwoTone className="fs-4" twoToneColor="#f759ab" />,
+    },
+    {
+        key: "job",
+        name: NOTI_CATEGORY_NAME.job,
+        icon: <NotificationTwoTone className="fs-4" twoToneColor="#b37feb" />,
+    },
+    {
+        key: "report",
+        name: NOTI_CATEGORY_NAME.report,
+        icon: <ToolTwoTone className="fs-4" twoToneColor="#36cfc9" />,
+    },
+    {
+        key: "etc",
+        name: NOTI_CATEGORY_NAME.etc,
+        icon: <ProfileTwoTone className="fs-4" twoToneColor="#ffa940" />,
+    },
+];
 
 const NOTI_TYPE = {
     info: {
@@ -45,22 +83,35 @@ class NotificationDrawer extends Component {
         isLoading: false,
         notis: [],
         page: 1,
+        categories: {},
+        selectedCategory: "",
         totalPage: 5,
         totalRecord: 0,
         hasLoadMore: true,
     };
 
     componentDidMount() {
-        this.loadNotificationList();
+        this.getNotificationCount();
     }
 
-    async loadNotificationList() {
+    async getNotificationCount() {
+        try {
+            let categories = await getNotificationCountApi();
+            this.setState({ categories });
+            this.props.onUpdateUnreadNotiCount(categories.all || 0);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async loadNotificationList(cat) {
         this.setState({ isLoading: true });
         try {
             let res = await getNotificationListApi({
                 params: {
                     page: this.state.page,
                     size: pageSize,
+                    category: cat,
                 },
             });
             this.setState({
@@ -70,7 +121,6 @@ class NotificationDrawer extends Component {
                 totalRecord: res.total_record,
                 hasLoadMore: res.data.length >= pageSize,
             });
-            this.props.onUpdateUnreadNotiCount(res.total_unread || 0);
         } catch (error) {
             console.log(error);
         } finally {
@@ -90,7 +140,7 @@ class NotificationDrawer extends Component {
                 hasLoadMore: true,
             },
             () => {
-                this.loadNotificationList();
+                this.getNotificationCount();
             }
         );
     }
@@ -104,6 +154,7 @@ class NotificationDrawer extends Component {
                     mark_all: readAll ? "yes" : "no",
                 },
             });
+            message.success("อ่านทั้งหมดแล้ว");
             onSuccess && onSuccess();
         } catch (error) {
             console.log(error);
@@ -131,110 +182,237 @@ class NotificationDrawer extends Component {
         window.location.href = `${assetPrefix}${path}`;
     }
 
+    onChangeCategory(cat) {
+        this.setState(
+            {
+                selectedCategory: cat,
+                notis: [],
+                page: 1,
+                totalPage: 5,
+                totalRecord: 0,
+                hasLoadMore: true,
+            },
+            () => this.loadNotificationList(cat)
+        );
+    }
+
     render() {
-        let { isLoading, notis, hasLoadMore, totalRecord } = this.state;
+        let {
+            isLoading,
+            categories,
+            selectedCategory,
+            notis,
+            hasLoadMore,
+            totalRecord,
+        } = this.state;
         let { isOpen = false, onClose } = this.props;
         return (
             <>
                 <Drawer
-                    title="แจ้งเตือน"
+                    title={
+                        selectedCategory == ""
+                            ? "แจ้งเตือน"
+                            : NOTI_CATEGORY_NAME[selectedCategory]
+                    }
+                    closeIcon={
+                        selectedCategory == "" ? (
+                            <CloseOutlined />
+                        ) : (
+                            <LeftOutlined />
+                        )
+                    }
+                    onClose={() =>
+                        selectedCategory == ""
+                            ? onClose()
+                            : this.setState({ selectedCategory: "" })
+                    }
                     placement="right"
                     extra={
-                        <span
-                            className="text-primary pointer"
-                            style={{ fontSize: 14 }}
-                            onClick={() =>
-                                this.markAsReadNotification([], true, () =>
-                                    this.afterMarkAsReadAll()
-                                )
-                            }
-                        >
-                            เปลี่ยนเป็นอ่านแล้วทั้งหมด
-                        </span>
+                        selectedCategory == "" ? (
+                            <span
+                                className="text-primary pointer"
+                                style={{ fontSize: 14 }}
+                                onClick={() =>
+                                    this.markAsReadNotification([], true, () =>
+                                        this.afterMarkAsReadAll()
+                                    )
+                                }
+                            >
+                                เปลี่ยนเป็นอ่านแล้วทั้งหมด
+                            </span>
+                        ) : (
+                            ""
+                        )
                     }
                     bodyStyle={{ padding: 0 }}
                     open={isOpen}
-                    onClose={() => onClose()}
                 >
-                    {totalRecord > 0 ? (
-                        <>
-                            <List
-                                dataSource={notis}
-                                renderItem={(item) => (
-                                    <List.Item
-                                        className="p-3 pointer"
-                                        style={{
-                                            background: item.mark_as_read
-                                                ? "#ffffff"
-                                                : "#e6f4ff",
-                                            alignItems: "start",
-                                        }}
-                                        onClick={() =>
-                                            this.onView(
-                                                item.id,
-                                                item.path,
-                                                item.mark_as_read
-                                            )
-                                        }
-                                    >
-                                        <div className="pt-1 px-2">
-                                            {NOTI_TYPE[item.type]?.icon}
-                                        </div>
-                                        <div style={{ flex: 1 }}>
-                                            <div
-                                                className="fs-6 fw-bold mb-2"
-                                                style={{
-                                                    color: NOTI_TYPE[item.type]
-                                                        ?.color,
-                                                }}
-                                            >
-                                                {item.message}
-                                            </div>
-                                            <div className="text-secondary">
-                                                <ClockCircleOutlined className="me-2" />
-                                                {getTimeFromNow(
-                                                    item.create_datetime
-                                                )}
-                                            </div>
-                                        </div>
-                                    </List.Item>
-                                )}
-                            />
-                            <div className="p-3">
-                                {hasLoadMore && (
-                                    <Button
-                                        block
-                                        size="large"
-                                        icon={
-                                            isLoading ? (
-                                                <SyncOutlined spin />
-                                            ) : (
-                                                <ReloadOutlined />
-                                            )
-                                        }
-                                        onClick={() =>
-                                            this.loadNotificationList()
-                                        }
-                                        disabled={isLoading}
-                                    >
-                                        {isLoading
-                                            ? "กำลังโหลด..."
-                                            : "ดูเพิ่มเติม"}
-                                    </Button>
-                                )}
-                            </div>
-                        </>
+                    {selectedCategory == "" ? (
+                        <List
+                            dataSource={NOTI_CATEGORY}
+                            renderItem={(item) => (
+                                <List.Item
+                                    className="p-3 pointer"
+                                    actions={[<RightOutlined />]}
+                                    onClick={() =>
+                                        this.onChangeCategory(item.key)
+                                    }
+                                >
+                                    <List.Item.Meta
+                                        avatar={item.icon}
+                                        title={item.name}
+                                    />
+                                    <Badge
+                                        count={categories[item.key] || 0}
+                                        overflowCount={99}
+                                    />
+                                </List.Item>
+                            )}
+                        />
                     ) : (
-                        <div
-                            style={{
-                                display: "flex",
-                                height: "100%",
-                                justifyContent: "center",
-                                alignItems: "center",
-                            }}
-                        >
-                            <Empty description="ยังไม่มีการแจ้งเตือน" />
-                        </div>
+                        <>
+                            {totalRecord > 0 ? (
+                                <>
+                                    <List
+                                        dataSource={notis}
+                                        renderItem={(item) => (
+                                            <List.Item
+                                                className="p-3 pointer"
+                                                style={{
+                                                    background:
+                                                        item.mark_as_read
+                                                            ? "#ffffff"
+                                                            : "#e6f4ff",
+                                                    alignItems: "start",
+                                                }}
+                                                onClick={() =>
+                                                    this.onView(
+                                                        item.id,
+                                                        item.path,
+                                                        item.mark_as_read
+                                                    )
+                                                }
+                                            >
+                                                <List.Item.Meta
+                                                    avatar={
+                                                        NOTI_TYPE[item.type]
+                                                            ?.icon
+                                                    }
+                                                    title={
+                                                        <div
+                                                            className="fs-6 fw-bold mb-2"
+                                                            style={{
+                                                                color: NOTI_TYPE[
+                                                                    item.type
+                                                                ]?.color,
+                                                            }}
+                                                        >
+                                                            {item.message}
+                                                        </div>
+                                                    }
+                                                    description={
+                                                        <div className="text-secondary">
+                                                            <ClockCircleOutlined className="me-2" />
+                                                            {getTimeFromNow(
+                                                                item.create_datetime
+                                                            )}
+                                                        </div>
+                                                    }
+                                                />
+                                            </List.Item>
+
+                                            // <List.Item
+                                            //     className="p-3 pointer"
+                                            //     style={{
+                                            //         background:
+                                            //             item.mark_as_read
+                                            //                 ? "#ffffff"
+                                            //                 : "#e6f4ff",
+                                            //         alignItems: "start",
+                                            //     }}
+                                            //     onClick={() =>
+                                            //         this.onView(
+                                            //             item.id,
+                                            //             item.path,
+                                            //             item.mark_as_read
+                                            //         )
+                                            //     }
+                                            // >
+                                            //     <div className="pt-1 px-2">
+                                            //         {NOTI_TYPE[item.type]?.icon}
+                                            //     </div>
+                                            //     <div style={{ flex: 1 }}>
+                                            //         <div
+                                            //             className="fs-6 fw-bold mb-2"
+                                            //             style={{
+                                            //                 color: NOTI_TYPE[
+                                            //                     item.type
+                                            //                 ]?.color,
+                                            //             }}
+                                            //         >
+                                            //             {item.message}
+                                            //         </div>
+                                            //         <div className="text-secondary">
+                                            //             <ClockCircleOutlined className="me-2" />
+                                            //             {getTimeFromNow(
+                                            //                 item.create_datetime
+                                            //             )}
+                                            //         </div>
+                                            //     </div>
+                                            // </List.Item>
+                                        )}
+                                    />
+                                    <div className="p-3">
+                                        {hasLoadMore && (
+                                            <Button
+                                                block
+                                                size="large"
+                                                icon={
+                                                    isLoading ? (
+                                                        <SyncOutlined spin />
+                                                    ) : (
+                                                        <ReloadOutlined />
+                                                    )
+                                                }
+                                                onClick={() =>
+                                                    this.loadNotificationList(
+                                                        selectedCategory
+                                                    )
+                                                }
+                                                disabled={isLoading}
+                                            >
+                                                {isLoading
+                                                    ? "กำลังโหลด..."
+                                                    : "ดูเพิ่มเติม"}
+                                            </Button>
+                                        )}
+                                    </div>
+                                </>
+                            ) : (
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        height: "100%",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                    }}
+                                >
+                                    {isLoading ? (
+                                        <Empty
+                                            description="กำลังโหลด..."
+                                            image={
+                                                <SyncOutlined
+                                                    spin
+                                                    className="fs-1 text-secondary"
+                                                />
+                                            }
+                                        />
+                                    ) : (
+                                        <Empty description="ยังไม่มีการแจ้งเตือน" />
+                                    )}
+                                </div>
+                            )}
+                        </>
                     )}
                 </Drawer>
             </>

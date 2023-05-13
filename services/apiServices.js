@@ -46,7 +46,8 @@ const BANK_ACCOUNT_DETAIL_ADD = `${API_URL_V1}/bank-account-detail-add.php`;
 const BANK_ACCOUNT_DETAIL_UPDATE = `${API_URL_V1}/bank-account-detail-update.php?id=:id`;
 const BANK_ACCOUNT_DETAIL_REMOVE = `${API_URL_V1}/bank-account-detail-remove.php?id=:id`;
 
-const NOTIFICATION_LIST = `${API_URL_V1}/notification-list.php?page=:page&size=:size`;
+const NOTIFICATION_COUNT = `${API_URL_V1}/notification-count.php`;
+const NOTIFICATION_LIST = `${API_URL_V1}/notification-list.php?page=:page&size=:size&category=:category`;
 const NOTIFICATION_MARK_AS_READ = `${API_URL_V1}/notification-mark-as-read.php`;
 
 const PAYMENT_LIST = `${API_URL_V1}/payment-list.php?page=:page&size=:size`;
@@ -291,6 +292,13 @@ export const removeBankAccountDetailApi = async (props) =>
         ...props,
         url: BANK_ACCOUNT_DETAIL_REMOVE,
         method: "POST",
+    });
+
+export const getNotificationCountApi = async (props) =>
+    callApi({
+        ...props,
+        url: NOTIFICATION_COUNT,
+        method: "GET",
     });
 
 export const getNotificationListApi = async (props) =>
