@@ -117,7 +117,7 @@ class DashboardPaymentList extends Component {
                                             `${record.member?.firstname} ${record.member?.lastname}`,
                                     },
                                     {
-                                        title: "วันที่ขออนุมัติ",
+                                        title: "วันที่ลงประกาศ",
                                         dataIndex: "create_datetime",
                                         key: "create_datetime",
                                         align: "center",
