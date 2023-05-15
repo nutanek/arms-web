@@ -864,7 +864,7 @@ class JobForm extends Component {
                                                 className="my-3 p-3"
                                                 showIcon
                                                 type="warning"
-                                                description="กรุณาชำระเงินภายใน 48 ชม. เพื่อไม่ให้ประกาศของท่ายถูกยกเลิก"
+                                                description="กรุณาชำระเงินภายใน 48 ชม. เพื่อไม่ให้ประกาศของท่านถูกยกเลิก"
                                             />
                                         )}
                                         <Alert
