@@ -124,7 +124,7 @@ class JobForm extends Component {
                 id_service_charge: job.service_charge?.id,
                 detail: job.detail,
                 price: job.price,
-                id_bank_account: job.bank_account?.id,
+                id_bank_account: job.bank_account?.id || null,
                 work_date: [
                     dayjs(
                         `${job.start_date} ${job.start_time}`,
@@ -357,8 +357,13 @@ class JobForm extends Component {
     onSubmit(values = {}) {
         let { job } = this.state;
 
-        if (!job.payment_image) {
+        if (!!job.bank_account?.id && !job.payment_image) {
             message.warning("กรุณาอัปโหลดหลักฐานการชำระเงิน");
+            return;
+        }
+
+        if (!!job.payment_image && !job.bank_account?.id) {
+            message.warning("กรุณาเลือกธนาคารปลายทาง");
             return;
         }
 
@@ -425,10 +430,13 @@ class JobForm extends Component {
     }
 
     confirmCancelJob(jobId) {
+        let { job } = this.state;
         Modal.confirm({
             title: "ท่านยืนยันที่จะยกเลิกงานนี้ใช่ไหม?",
             content:
-                "หากท่านทำการยกเลิก ท่านจะไม่สามารถรับเงินค่าธรรมเนียมคืนได้",
+                job.job_status != 8
+                    ? "หากท่านทำการยกเลิก ท่านจะไม่สามารถรับเงินค่าธรรมเนียมคืนได้"
+                    : null,
             okText: "ยืนยัน",
             cancelText: "ยกเลิก",
             centered: true,
@@ -850,10 +858,22 @@ class JobForm extends Component {
                                             )}{" "}
                                             บาท ({payment.feePercentage}%)
                                         </div>
-                                        <div className="text-danger my-4">
-                                            *หากมีการยกเลิกงานภายหลัง
-                                            จะไม่สามารถรับค่าธรรมเนียมคืนได้
-                                        </div>
+                                        {(!job.job_status ||
+                                            job.job_status == 8) && (
+                                            <Alert
+                                                className="my-3 p-3"
+                                                showIcon
+                                                type="warning"
+                                                description="กรุณาชำระเงินภายใน 48 ชม. เพื่อไม่ให้ประกาศของท่ายถูกยกเลิก"
+                                            />
+                                        )}
+                                        <Alert
+                                            className="my-3 p-3"
+                                            showIcon
+                                            type="warning"
+                                            description="หากมีการยกเลิกงานภายหลัง
+                                                จะไม่สามารถรับค่าธรรมเนียมคืนได้"
+                                        />
                                     </Col>
                                     <Col xs={24} lg={12}>
                                         <Card>
@@ -864,13 +884,6 @@ class JobForm extends Component {
                                                     </div>
                                                 }
                                                 name="id_bank_account"
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message:
-                                                            "โปรดระบุ ธนาคารปลายทาง",
-                                                    },
-                                                ]}
                                             >
                                                 <Select
                                                     placeholder="โปรดเลือกธนาคารปลายทาง"

@@ -1,17 +1,7 @@
 import React, { Component } from "react";
 import Head from "next/head";
 import Router from "next/router";
-import {
-    Row,
-    Col,
-    Button,
-    Modal,
-    Popconfirm,
-    Tag,
-    Card,
-    Image,
-    message,
-} from "antd";
+import { Row, Col, Button, Modal, Tag, Card, Image } from "antd";
 import { ClockCircleOutlined } from "@ant-design/icons";
 import moment from "moment";
 import {
@@ -151,7 +141,9 @@ class DashboardAccountDetail extends Component {
                                                 className="fs-6 fw-light"
                                             >
                                                 <b>ชื่อ: </b>
-                                                <Link href={`/dashboard/member/detail?id=${member.id}`}>
+                                                <Link
+                                                    href={`/dashboard/member/detail?id=${member.id}`}
+                                                >
                                                     <span className="text-primary">
                                                         {member?.firstname}{" "}
                                                         {member?.lastname}

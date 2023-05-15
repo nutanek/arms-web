@@ -6,30 +6,20 @@ import {
     Col,
     Form,
     Input,
-    Select,
     Button,
     Modal,
     InputNumber,
 } from "antd";
-import dayjs from "dayjs";
-import cloneDeep from "lodash/cloneDeep";
-import { assetPrefix } from "./../../../next.config";
-import { GENDERS } from "./../../../constants/appConstants";
-import { IMAGE_PATH } from "./../../../constants/config";
 import {
-    getSkillListApi,
     getFeeDetailApi,
     addFeeDetailApi,
     updateFeeDetailApi,
-    uploadImageApi,
 } from "./../../../services/apiServices";
 import MainLayout from "./../../../components/Layout/MainLayout";
 import AccountLayout from "./../../../components/Layout/AccountLayout";
 import Loading from "./../../../components/Utility/Modal/Loading";
 
-const { Option } = Select;
-
-let title = "ข้อมูลสมาชิก";
+let title = "ค่าธรรมเนียม";
 
 class DashboardFeeDetail extends Component {
     state = {
