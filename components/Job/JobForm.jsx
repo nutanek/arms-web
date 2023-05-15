@@ -25,6 +25,7 @@ import {
 import { PhoneOutlined, MailOutlined, StarOutlined } from "@ant-design/icons";
 import cloneDeep from "lodash/cloneDeep";
 import dayjs from "dayjs";
+import moment from "moment";
 import numeral from "numeral";
 import { assetPrefix } from "./../../next.config";
 import { IMAGE_PATH } from "./../../constants/config";
@@ -47,6 +48,8 @@ import { JOB_STATUS } from "@/constants/appConstants";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
+
+const expiryPaymentLiftTime = 48;
 
 class JobForm extends Component {
     state = {
@@ -468,8 +471,11 @@ class JobForm extends Component {
         let bankAccount = bankAccounts.find(
             (bank) => bank.id == job.bank_account?.id
         );
-        console.log(bankAccounts);
-        console.log(job.bank_account?.id);
+        let expiryPaymentDate = !!job.create_datetime
+            ? moment(job.create_datetime)
+                  .add(expiryPaymentLiftTime, "hours")
+                  .format("DD/MM/YYYY HH:mm น.")
+            : "";
 
         return (
             <>
@@ -864,7 +870,11 @@ class JobForm extends Component {
                                                 className="my-3 p-3"
                                                 showIcon
                                                 type="warning"
-                                                description="กรุณาชำระเงินภายใน 48 ชม. เพื่อไม่ให้ประกาศของท่านถูกยกเลิก"
+                                                description={`กรุณาชำระเงินภายใน ${
+                                                    job.create_datetime
+                                                        ? expiryPaymentDate
+                                                        : `${expiryPaymentLiftTime} ชม.`
+                                                } เพื่อไม่ให้ประกาศของท่านถูกยกเลิก`}
                                             />
                                         )}
                                         <Alert
